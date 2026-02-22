@@ -1,2 +1,5 @@
 #ignore the env for the project
 .venv
+
+# Ignore python cache
+__pycache__
