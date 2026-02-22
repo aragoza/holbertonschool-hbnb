@@ -5,6 +5,7 @@ from amenities import Amenity
 from reviews import Review
 from users import User
 
+
 class Place(BaseModel):
     def __init__(self, title: str, description: str, price: float, latitude: float, longitude: float, owner: User):
         super().__init__()

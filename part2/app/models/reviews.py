@@ -4,6 +4,7 @@ from __init__ import BaseModel
 from places import Place
 from users import User
 
+
 class Review(BaseModel):
     def __init__(self, text: str, rating: int, place: Place, user: User):
         super().__init__()

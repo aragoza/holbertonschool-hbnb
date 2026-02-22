@@ -8,7 +8,7 @@ class User(BaseModel):
     Docstring for User
     """
     # we will have to import an email validator (maybe regex)
-    def __init__(self, first_name:str, last_name:str, email, is_admin=False):
+    def __init__(self, first_name: str, last_name: str, email, is_admin=False):
         """
         Docstring for __init__
 
@@ -16,7 +16,7 @@ class User(BaseModel):
         :param first_name: e.g Elliot
         :param last_name: e.g CHARLET
         :param email: email that respect the email validator
-        :param is_admin: bool that is 
+        :param is_admin: bool that is set to false by default
         """
         super().__init__()
         self.first_name = first_name
