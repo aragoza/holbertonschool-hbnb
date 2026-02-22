@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from __init__ import BaseModel
-from places import Place
+from place import Place
 from user import User
 
 

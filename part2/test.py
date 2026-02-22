@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-from app.models.places import Place
-from app.models.users import User
-from app.models.reviews import Review
-
+from app.models.review import Review
+from app.models.place import Place
+from app.models.user import User
 
 def test_place_creation():
     owner = User(first_name="Alice", last_name="Smith", email="alice.smith@example.com")
