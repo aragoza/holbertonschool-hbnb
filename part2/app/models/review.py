@@ -2,7 +2,7 @@
 
 from __init__ import BaseModel
 from places import Place
-from users import User
+from user import User
 
 
 class Review(BaseModel):

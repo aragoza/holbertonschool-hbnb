@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from __init__ import BaseModel
-from amenities import Amenity
-from reviews import Review
-from users import User
+from amenity import Amenity
+from review import Review
+from user import User
 
 
 class Place(BaseModel):
