@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from __init__ import BaseModel
-from place import Place
-from user import User
+from . import BaseModel
+
+from .user import User
+from .place import Place
 
 
 class Review(BaseModel):

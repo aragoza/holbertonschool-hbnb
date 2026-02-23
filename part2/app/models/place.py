@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from __init__ import BaseModel
-from amenity import Amenity
-from review import Review
-from user import User
+from . import BaseModel
+
+from .amenity import Amenity
+from .user import User
 
 
 class Place(BaseModel):
@@ -18,7 +18,7 @@ class Place(BaseModel):
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
-    def add_review(self, review: Review):
+    def add_review(self, review: "Review"):
         """Add a review to the place."""
         self.reviews.append(review)
 
