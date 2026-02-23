@@ -26,7 +26,7 @@ class UserList(Resource):
         pattern = r"^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
         valid = match(pattern, user_data["email"])
 
-        if valid:
+        if not valid:
             return {'error': 'Email is not valid'}, 400
 
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
