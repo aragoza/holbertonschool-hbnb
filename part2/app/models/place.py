@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from . import BaseModel
+from app.models.__init__ import BaseModel
 
-from .amenity import Amenity
-from .user import User
+from app.models.amenity import Amenity
+from app.models.user import User
 
 
 class Place(BaseModel):
@@ -33,4 +33,4 @@ class Place(BaseModel):
 
         :param self: Description
         """
-        self.owner.__places_owned.append(self)
+        self.owner.places_owned.append(self)
