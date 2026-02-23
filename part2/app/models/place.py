@@ -18,10 +18,19 @@ class Place(BaseModel):
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
-    def add_review(self, review: "Review"):
+    def add_review(self, review):
         """Add a review to the place."""
         self.reviews.append(review)
 
     def add_amenity(self, amenity: Amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
+
+# to add a place to the list of the user place owned
+    def add_place_to_owner(self):
+        """
+        Docstring for add_place
+
+        :param self: Description
+        """
+        self.owner.__places_owned.append(self)
