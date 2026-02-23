@@ -23,3 +23,14 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
+        self.__places_owned = []
+
+# to add a place to the list of the user place owned
+    def add_place(self, place):
+        """
+        Docstring for add_place
+
+        :param self: Description
+        :param place: Description
+        """
+        self.__places_owned.append(place)
