@@ -27,3 +27,22 @@ class HBnBFacade:
 
     def get_user_by_email(self, email: str) -> User:
         return self.user_repo.get_by_attribute('email', email)
+
+    ## Amenity
+    def create_amenity(self, amenity_data):
+    # Placeholder for logic to create an amenity
+        pass
+
+    def get_amenity(self, amenity_id):
+    # Placeholder for logic to retrieve an amenity by ID
+        pass
+
+    def get_all_amenities(self):
+    # Placeholder for logic to retrieve all amenities
+        pass
+
+    def update_amenity(self, amenity_id, amenity_data):
+    # Placeholder for logic to update an amenity
+        pass
+
+    ## Review
