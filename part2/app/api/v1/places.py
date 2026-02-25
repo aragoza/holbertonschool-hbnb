@@ -41,6 +41,16 @@ class PlaceList(Resource):
         def test(pair):
             key, value = pair
             return key in dict_place_model.keys()
+
+        if not place_data.title or len(place_data.title) < 3:
+            return {'error': 'a place need a good title'}, 400
+        if not isinstance(place_data.price, (float, int)) or place_data.price < 0:
+            return {'error': 'price must be a positive float or integer'}, 400
+        if place_data.latitude < -90 or place_data.latitude > 90:
+            return {'error': 'latitude must be float or int between -90 and 90'}, 400
+        if place_data.longitude < -180 or place_data.longitude > 180:
+            return {'error': 'longitude must be float or int between -180 and 180'}, 400
+
         place = facade.create_place(dict(filter(test, place_data.items())))
 
         return {
@@ -113,7 +123,12 @@ class PlaceResource(Resource):
                 'last_name': place.owner.last_name,
                 'email': place.owner.email
             },
-            'amenities': place.amenities,
+            'amenities': [
+                {
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ],
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
         }
@@ -129,6 +144,17 @@ class PlaceResource(Resource):
         def test(pair):
             key, value = pair
             return key in dict_place_model.keys()
+
+        if not place_data.title or len(place_data.title) < 3:
+            return {'error': 'a place need a good title'}, 400
+        if not isinstance(place_data.price, (float, int)) or place_data.price < 0:
+            return {'error': 'price must be a positive float or integer'}, 400
+        if place_data.latitude < -90 or place_data.latitude > 90:
+            return {'error': 'latitude must be float or int between -90 and 90'}, 400
+        if place_data.longitude < -180 or place_data.longitude > 180:
+            return {'error': 'longitude must be float or int between -180 and 180'}, 400
+        if not isinstance(place_data.owner, user_model):
+            return {'error': 'owner must be like the model'}, 400
 
         facade.update_place(place_id, dict(filter(test, place_data.items())))
 

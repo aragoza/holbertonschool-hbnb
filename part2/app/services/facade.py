@@ -16,25 +16,18 @@ class HBnBFacade:
     ## Place
     def create_place(self, place_data):
         # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        amenities = []
-        if 'amenities' in place_data.keys():
-            amenities = place_data['amenities']
-
         place_data['owner'] = self.user_repo.get(place_data['owner_id'])
         del place_data['owner_id']
 
         place = Place(**place_data)
-        if not isinstance(place.price, (float, int)) or place.price < 0:
-            place.price = 0
-        if place.latitude < -90 or place.latitude > 90:
-            place.latitude = 0
-        if place.longitude < -180 or place.longitude > 180:
-            place.longitude = 0
         self.place_repo.add(place)
 
-        for amenity_id in amenities:
-            amenity = self.amenity_repo.get(amenity_id)
-            place.add_amenity(amenity)
+        if 'amenities' in place_data.keys():
+            amenities = []
+            for amenity_id in place_data['amenities']:
+                amenity = self.amenity_repo.get(amenity_id)
+                amenities.append(amenity)
+            place.amenities = amenities
 
         return place
 
@@ -45,8 +38,17 @@ class HBnBFacade:
         return self.place_repo.get_all()
 
     def update_place(self, place_id, place_data):
-        self.place_repo.update(place_id, place_data)
+        place_data['owner'] = self.user_repo.get(place_data['owner_id'])
+        del place_data['owner_id']
 
+        if 'amenities' in place_data.keys():
+            amenities = []
+            for amenity_id in place_data['amenities']:
+                amenity = self.amenity_repo.get(amenity_id)
+                amenities.append(amenity)
+            place_data['amenities'] = amenities
+
+        self.place_repo.update(place_id, place_data)
 
 
     ## User
