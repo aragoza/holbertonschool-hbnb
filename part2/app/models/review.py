@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from app.models.__init__ import BaseModel
-
 from app.models.place import Place, User
 
 
@@ -12,4 +11,3 @@ class Review(BaseModel):
         self.rating = rating
         self.place = place
         self.user = user
-
