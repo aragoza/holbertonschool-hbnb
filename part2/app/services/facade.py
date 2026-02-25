@@ -14,8 +14,22 @@ class HBnBFacade:
         self.amenity_repo = InMemoryRepository()
 
     ## Place
+    def create_place(self, place_data):
+        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        place = Place(**place_data)
+        self.place_repo.add(place)
+
+        return place
+
     def get_place(self, place_id: str) -> Place:
         return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        self.place_repo.update(place_id, place_data)
+
 
 
     ## User
@@ -45,7 +59,7 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, amenity_data):
         self.amenity_repo.update(amenity_id, amenity_data)
-        return self.amenity_repo.get(amenity_id)
+
 
     ## Review
 
