@@ -53,6 +53,14 @@ class HBnBFacade:
     ## Review
 
     def create_review(self, review_data: dict):
+        review_data['user'] = self.user_repo.get(review_data['user_id'])
+
+        # Using the user repository for now, bc place endpoints have not been created
+        review_data['place'] = self.user_repo.get(review_data['place_id'])
+
+        del review_data['user_id']
+        del review_data['place_id']
+
         review = Review(**review_data)
         self.review_repo.add(review)
 
