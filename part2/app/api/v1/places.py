@@ -54,8 +54,18 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        place = facade.get_all_places()
-        return place
+        return [{
+            'id': place.id,
+            'title': place.title,
+            'description': place.description,
+            'price': place.price,
+            'latitude': place.latitude,
+            'longitude': place.longitude,
+            'owner_id': place.owner.id,
+            'amenities': place.amenities,
+            'updated_at': int(datetime.timestamp(place.updated_at)),
+            'created_at': int(datetime.timestamp(place.created_at))
+        } for place in facade.get_all_places()]
 
 
 @api.route('/<place_id>')
