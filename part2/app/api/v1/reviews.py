@@ -28,7 +28,7 @@ class ReviewList(Resource):
         if data['rating'] < 0 or data['rating'] > 5:
             return {'error': 'Rating must be betweeen 0 and 5'}
 
-        place = facade.get(data['place_id'])
+        place = facade.get_place(data['place_id'])
         if not place:
             return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
 
@@ -104,7 +104,7 @@ class ReviewResource(Resource):
         if data['rating'] < 0 or data['rating'] > 5:
             return {'error': 'Rating must be betweeen 0 and 5'}
 
-        place = facade.get(data['place_id'])
+        place = facade.get_place(data['place_id'])
         if not place:
             return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
 
