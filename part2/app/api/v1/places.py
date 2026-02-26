@@ -56,7 +56,12 @@ class PlaceList(Resource):
                 'last_name': place.owner.last_name,
                 'email': place.owner.email
             },
-            'amenities': place.amenities,
+            'amenities': [
+                {
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ],
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
         }, 201
@@ -77,7 +82,12 @@ class PlaceList(Resource):
                 'last_name': place.owner.last_name,
                 'email': place.owner.email
             },
-            'amenities': place.amenities,
+            'amenities': [
+                {
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ],
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
         } for place in facade.get_all_places()]
@@ -103,6 +113,7 @@ class PlaceResource(Resource):
         def test(pair):
             key, value = pair
             return key in dict_place_model.keys()
-        place = facade.update_place(place_id, dict(filter(test, place_data.items())))
 
-        return place
+        facade.update_place(place_id, dict(filter(test, place_data.items())))
+
+        return {"message": "Place updated successfully"}
