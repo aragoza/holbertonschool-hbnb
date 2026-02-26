@@ -6,12 +6,13 @@ from datetime import datetime
 api = Namespace('reviews', description='Review operations')
 
 # Define the review model for input validation and documentation
-review_model = api.model('Review', {
+dict_review_model = {
     'text': fields.String(required=True, description='Text of the review'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
     'user_id': fields.String(required=True, description='ID of the user'),
     'place_id': fields.String(required=True, description='ID of the place')
-})
+}
+review_model = api.model('Review', dict_review_model)
 
 @api.route('/')
 class ReviewList(Resource):
@@ -32,7 +33,11 @@ class ReviewList(Resource):
         if not place:
             return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
 
-        review = facade.create_review(data)
+        def test(pair):
+            key, value = pair
+            return key in dict_review_model.keys()
+
+        review = facade.create_review(dict(filter(test, data.items())))
         return {
             'id': review.id,
             'text': review.text,

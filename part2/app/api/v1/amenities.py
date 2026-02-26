@@ -4,9 +4,10 @@ from app.services import facade
 api = Namespace('amenities', description='Amenity operations')
 
 # Define the amenity model for input validation and documentation
-amenity_model = api.model('Amenity', {
+dict_amenity_model = {
     'name': fields.String(required=True, description='Name of the amenity')
-})
+}
+amenity_model = api.model('Amenity', dict_amenity_model)
 
 @api.route('/')
 class AmenityList(Resource):
@@ -16,7 +17,12 @@ class AmenityList(Resource):
     def post(self):
         """Register a new amenity"""
         amenity_data = api.payload
-        new_amenity = facade.create_amenity(amenity_data)
+
+        def test(pair):
+            key, value = pair
+            return key in dict_amenity_model.keys()
+ 
+        new_amenity = facade.create_amenity(dict(filter(test, amenity_data.items())))
         return {'id': new_amenity.id, 'name': new_amenity.name}, 201
 
     @api.response(200, 'List of amenities retrieved successfully')
@@ -48,6 +54,11 @@ class AmenityResource(Resource):
     def put(self, amenity_id):
         """Update an amenity's information"""
         amenity_data = api.payload
-        amenity = facade.update_amenity(amenity_id, amenity_data)
+
+        def test(pair):
+            key, value = pair
+            return key in dict_amenity_model.keys()
+
+        amenity = facade.update_amenity(amenity_id, dict(filter(test, amenity_data.items())))
 
         return {'id': amenity.id, 'name': amenity.name}, 200

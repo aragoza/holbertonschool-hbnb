@@ -18,7 +18,7 @@ user_model = api.model('PlaceUser', {
 })
 
 # Define the place model for input validation and documentation
-place_model = api.model('Place', {
+dict_place_model = {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night', min=0),
@@ -26,7 +26,8 @@ place_model = api.model('Place', {
     'longitude': fields.Float(required=True, description='Longitude of the place', min=-180, max=180),
     'owner_id': fields.String(required=True, description='ID of the owner'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
-})
+}
+place_model = api.model('Place', dict_place_model)
 
 @api.route('/')
 class PlaceList(Resource):
@@ -36,7 +37,11 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
-        place = facade.create_place(place_data)
+
+        def test(pair):
+            key, value = pair
+            return key in dict_place_model.keys()
+        place = facade.create_place(dict(filter(test, place_data.items())))
 
         return {
             'id': place.id,
@@ -94,5 +99,10 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         place_data = api.payload
-        place = facade.update_place(place_id, place_data)
+
+        def test(pair):
+            key, value = pair
+            return key in dict_place_model.keys()
+        place = facade.update_place(place_id, dict(filter(test, place_data.items())))
+
         return place

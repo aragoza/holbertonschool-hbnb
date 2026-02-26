@@ -7,11 +7,12 @@ from re import match
 api = Namespace('users', description='User operations')
 
 # Define the user model for input validation and documentation
-user_model = api.model('User', {
+dict_user_model = {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user')
-})
+}
+user_model = api.model('User', dict_user_model)
 
 @api.route('/')
 class UserList(Resource):
@@ -41,7 +42,12 @@ class UserList(Resource):
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
-        new_user = facade.create_user(user_data)
+        def test(pair):
+            key, value = pair
+            return key in dict_user_model.keys()
+
+        new_user = facade.create_user(dict(filter(test, user_data.items())))
+
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
