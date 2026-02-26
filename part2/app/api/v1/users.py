@@ -23,6 +23,11 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
+        if len(user_data['first_name']) < 3:
+            return {'error': 'first_name must be at least 3 characters long'}, 400
+
+        if len(user_data['last_name']) < 3:
+            return {'error': 'last_name must be at least 3 characters long'}, 400
 
         ## Check if its real email pattern (with Regex)
         pattern = r"^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
@@ -42,8 +47,8 @@ class UserList(Resource):
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
             'email': new_user.email,
-            'updated_at': datetime.timestamp(new_user.updated_at),
-            'created_at': datetime.timestamp(new_user.created_at)
+            'updated_at': int(datetime.timestamp(new_user.updated_at)),
+            'created_at': int(datetime.timestamp(new_user.created_at))
         }, 201
 
 @api.route('/<user_id>')
@@ -60,6 +65,6 @@ class UserResource(Resource):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
-            'updated_at': datetime.timestamp(user.updated_at),
-            'created_at': datetime.timestamp(user.created_at)
+            'updated_at': int(datetime.timestamp(user.updated_at)),
+            'created_at': int(datetime.timestamp(user.created_at))
         }, 200
