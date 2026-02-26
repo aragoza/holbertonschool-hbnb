@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from datetime import datetime
 
 api = Namespace('places', description='Place operations')
 
@@ -37,7 +38,18 @@ class PlaceList(Resource):
         place_data = api.payload
         place = facade.create_place(place_data)
 
-        return {'id': place.id, 'title': place.title, 'description': place.description, 'price': place.price, 'latitude': place.latitude, 'longitude': place.longitude, 'owner_id':place.owner, 'amenities':place.amenities}, 201
+        return {
+            'id': place.id,
+            'title': place.title,
+            'description': place.description,
+            'price': place.price,
+            'latitude': place.latitude,
+            'longitude': place.longitude,
+            'owner_id': place.owner,
+            'amenities': place.amenities,
+            'updated_at': datetime.timestamp(place.updated_at),
+            'created_at': datetime.timestamp(place.created_at)
+        }, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):

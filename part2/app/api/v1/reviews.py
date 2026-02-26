@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from datetime import datetime
+
 
 api = Namespace('reviews', description='Review operations')
 
@@ -32,7 +34,9 @@ class ReviewList(Resource):
             'text': review.text,
             'rating': review.rating,
             'user_id': review.user.id,
-            'place_id': review.place.id
+            'place_id': review.place.id,
+            'updated_at': datetime.timestamp(review.updated_at),
+            'created_at': datetime.timestamp(review.created_at)
         }, 201
 
     @api.response(200, 'List of reviews retrieved successfully')
@@ -46,7 +50,9 @@ class ReviewList(Resource):
                 'text': review.text,
                 'rating': review.rating,
                 'user_id': review.user.id,
-                'place_id': review.place.id
+                'place_id': review.place.id,
+                'updated_at': datetime.timestamp(review.updated_at),
+                'created_at': datetime.timestamp(review.created_at)
             })
 
         return result
