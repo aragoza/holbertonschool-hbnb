@@ -22,11 +22,15 @@ class ReviewList(Resource):
         """Register a new review"""
         data = api.payload
 
-        if len(data['text']) <= 0:
-            return {'error': "Text cannot be empty"}, 400
+        if len(data['text']) < 8:
+            return {'error': "text must be at least 8 characters long"}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
             return {'error': 'Rating must be betweeen 0 and 5'}
+
+        place = facade.get(data['place_id'])
+        if not place:
+            return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
 
         review = facade.create_review(data)
         return {
@@ -35,8 +39,8 @@ class ReviewList(Resource):
             'rating': review.rating,
             'user_id': review.user.id,
             'place_id': review.place.id,
-            'updated_at': datetime.timestamp(review.updated_at),
-            'created_at': datetime.timestamp(review.created_at)
+            'updated_at': int(datetime.timestamp(review.updated_at)),
+            'created_at': int(datetime.timestamp(review.created_at))
         }, 201
 
     @api.response(200, 'List of reviews retrieved successfully')
@@ -51,8 +55,8 @@ class ReviewList(Resource):
                 'rating': review.rating,
                 'user_id': review.user.id,
                 'place_id': review.place.id,
-                'updated_at': datetime.timestamp(review.updated_at),
-                'created_at': datetime.timestamp(review.created_at)
+                'updated_at': int(datetime.timestamp(review.updated_at)),
+                'created_at': int(datetime.timestamp(review.created_at))
             })
 
         return result
@@ -70,7 +74,9 @@ class ReviewResource(Resource):
                 'text': review.text,
                 'rating': review.rating,
                 'user_id': review.user.id,
-                'place_id': review.place.id
+                'place_id': review.place.id,
+                'updated_at': int(datetime.timestamp(review.updated_at)),
+                'created_at': int(datetime.timestamp(review.created_at))
             }
 
         reviews = facade.get_reviews_by_place(review_id)
@@ -79,7 +85,9 @@ class ReviewResource(Resource):
             'text': review.text,
             'rating': review.rating,
             'user_id': review.user.id,
-            'place_id': review.place.id
+            'place_id': review.place.id,
+            'updated_at': int(datetime.timestamp(review.updated_at)),
+            'created_at': int(datetime.timestamp(review.created_at))
         } for review in reviews]
 
     @api.expect(review_model)
@@ -89,6 +97,17 @@ class ReviewResource(Resource):
     def put(self, review_id):
         """Update a review's information"""
         data = api.payload
+
+        if len(data['text']) < 8:
+            return {'error': "text must be at least 8 characters long"}, 400
+
+        if data['rating'] < 0 or data['rating'] > 5:
+            return {'error': 'Rating must be betweeen 0 and 5'}
+
+        place = facade.get(data['place_id'])
+        if not place:
+            return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
+
         facade.update_review(review_id, data)
 
     @api.response(200, 'Review deleted successfully')
