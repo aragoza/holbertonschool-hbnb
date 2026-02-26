@@ -45,7 +45,12 @@ class PlaceList(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner_id': place.owner.id,
+            'owner': {
+                'id': place.owner.id,
+                'first_name': place.owner.first_name,
+                'last_name': place.owner.last_name,
+                'email': place.owner.email
+            },
             'amenities': place.amenities,
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
@@ -61,7 +66,12 @@ class PlaceList(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner_id': place.owner.id,
+            'owner': {
+                'id': place.owner.id,
+                'first_name': place.owner.first_name,
+                'last_name': place.owner.last_name,
+                'email': place.owner.email
+            },
             'amenities': place.amenities,
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
