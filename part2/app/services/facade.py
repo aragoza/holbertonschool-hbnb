@@ -24,6 +24,12 @@ class HBnBFacade:
         del place_data['owner_id']
 
         place = Place(**place_data)
+        if not isinstance(place.price, (float, int)) or place.price < 0:
+            place.price = 0
+        if place.latitude < -90 or place.latitude > 90:
+            place.latitude = 0
+        if place.longitude < -180 or place.longitude > 180:
+            place.longitude = 0
         self.place_repo.add(place)
 
         for amenity_id in amenities:
