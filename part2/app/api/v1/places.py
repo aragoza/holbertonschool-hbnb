@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask import request
 
 api = Namespace('places', description='Place operations')
 
@@ -62,6 +61,6 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        place_data = request.json
+        place_data = api.payload
         place = facade.update_place(place_id, place_data)
         return place
