@@ -45,10 +45,10 @@ class PlaceList(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner_id': place.owner,
+            'owner_id': place.owner.id,
             'amenities': place.amenities,
-            'updated_at': datetime.timestamp(place.updated_at),
-            'created_at': datetime.timestamp(place.created_at)
+            'updated_at': int(datetime.timestamp(place.updated_at)),
+            'created_at': int(datetime.timestamp(place.created_at))
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')
