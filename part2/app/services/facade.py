@@ -16,6 +16,9 @@ class HBnBFacade:
     ## Place
     def create_place(self, place_data):
         # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        place_data['owner'] = self.user_repo.get(place_data['owner_id'])
+        del place_data['owner_id']
+
         place = Place(**place_data)
         self.place_repo.add(place)
 
