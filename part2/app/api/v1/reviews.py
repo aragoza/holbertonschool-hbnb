@@ -22,7 +22,7 @@ class ReviewList(Resource):
         """Register a new review"""
         data = api.payload
 
-        if not data['text'] or len(data['text']) < 8:
+        if not data['text'] or len(data['text'].strip()) < 8:
             return {'error': "text must be at least 8 characters long"}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
@@ -106,7 +106,7 @@ class ReviewResource(Resource):
         """Update a review's information"""
         data = api.payload
 
-        if len(data['text']) < 8:
+        if len(data['text'].strip()) < 8:
             return {'error': "text must be at least 8 characters long"}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
