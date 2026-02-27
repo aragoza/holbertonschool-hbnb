@@ -48,6 +48,8 @@ class AmenityResource(Resource):
     def put(self, amenity_id):
         """Update an amenity's information"""
         amenity_data = api.payload
+        if not amenity_data.name or len(amenity_data.name) == "":
+            return {'error': 'amenity must have a name even a bad name'}
         amenity = facade.update_amenity(amenity_id, amenity_data)
 
         return {'id': amenity.id, 'name': amenity.name}, 200
