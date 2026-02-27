@@ -44,12 +44,16 @@ class PlaceList(Resource):
 
         if not place_data['title'] or len(place_data['title']) < 3:
             return {'error': 'a place need a good title'}, 400
+        if not place_data['description']:
+            place_data['description'] = ""
         if not isinstance(place_data['price'], (float, int)) or place_data['price'] < 0:
             return {'error': 'price must be a positive float or integer'}, 400
         if place_data['latitude'] < -90 or place_data['latitude'] > 90:
             return {'error': 'latitude must be float or int between -90 and 90'}, 400
         if place_data['longitude'] < -180 or place_data['longitude'] > 180:
             return {'error': 'longitude must be float or int between -180 and 180'}, 400
+        if facade.get_user(place_data['owner_id']) == None:
+            return {'error': 'the user does not exist'}, 404
 
         place = facade.create_place(dict(filter(test, place_data.items())))
 
@@ -145,7 +149,7 @@ class PlaceResource(Resource):
             key, value = pair
             return key in dict_place_model.keys()
 
-        if not place_data['title'] or len(place_data['title']) < 3:
+        if not place_data['title'] or len(place_data['title']) < 3 or len(place_data['title']) > 100:
             return {'error': 'a place need a good title'}, 400
         if not isinstance(place_data['price'], (float, int)) or place_data['price'] < 0:
             return {'error': 'price must be a positive float or integer'}, 400
