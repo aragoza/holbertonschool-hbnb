@@ -1,14 +1,17 @@
 import requests
+from faker import Faker
+from random import choice, randint
 
 url = "http://localhost:5000/api/v1"
 
 try:
+    fake = Faker()
     req = requests.post(
         f"{url}/users",
         json={
-            'first_name': 'John',
-            'last_name': 'Due',
-            'email': 'john.due@example.com'
+            'first_name': fake.first_name(),
+            'last_name': fake.last_name(),
+            'email': fake.email()
             })
     if req.status_code == 201:
         user = req.json()
@@ -18,10 +21,11 @@ except Exception as e:
     print(e)
 
 try:
+    amenties = ['Wi-fi', 'Netflix', 'Parking', 'Piscine', 'Billard', 'Baby-Foot']
     req = requests.post(
         f"{url}/amenities",
         json={
-            'name': 'Wi-Fi'
+            'name': choice(amenties)
         }
     )
     if req.status_code == 201:
@@ -51,11 +55,19 @@ except Exception as e:
     print(e)
 
 try:
+    rate = randint(0, 5)
+
+    word = 'good'
+    if rate < 3:
+        word = 'bad'
+    if rate == 5:
+        word = 'very good'
+
     req = requests.post(
         f"{url}/reviews",
         json={
-            'text': 'My test review',
-            'rating': 5,
+            'text': f'This rental is {word}',
+            'rating': rate,
             'place_id': place['id'],
             'user_id': user['id']
         }
@@ -102,14 +114,16 @@ try:
 except Exception as e:
     print(e)
 
+print("--------- Create user ---------\n")
 print(user)
-print("\n------------------------------------\n")
+print("\n--------- Create amenity ---------\n")
 print(amenity)
-print("\n------------------------------------\n")
+print("\n--------- Create place ---------\n")
 print(place)
-print("\n------------------------------------\n")
+print("\n--------- Create review ---------\n")
 print(review)
-print("\n------------------------------------\n\n")
+print("\n--------- Update place ---------\n\n")
 print(updated_place)
-print("\n------------------------------------\n")
+print("\n--------- Fetch place ---------\n")
 print(fetch_place)
+print("\n-------------------------------")
