@@ -24,10 +24,10 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        if len(user_data['first_name']) < 3 or len(user_data['first_name']) > 50:
+        if len(user_data['first_name'].strip()) < 3 or len(user_data['first_name'].strip()) > 50:
             return {'error': 'first_name must be at least 3 characters long'}, 400
 
-        if len(user_data['last_name']) < 3 or len(user_data['first_name']) > 50:
+        if len(user_data['last_name'].strip()) < 3 or len(user_data['last_name'].strip()) > 50:
             return {'error': 'last_name must be at least 3 characters long'}, 400
 
         ## Check if its real email pattern (with Regex)
