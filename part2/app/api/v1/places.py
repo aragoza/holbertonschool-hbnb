@@ -36,6 +36,8 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
+        if not place_data.title or len(place_data.title) < 3:
+            return {'error': 'a place need a good title'}, 400
         if not isinstance(place_data.price, (float, int)) or place_data.price < 0:
             return {'error': 'price must be a positive float or integer'}, 400
         if place_data.latitude < -90 or place_data.latitude > 90:
