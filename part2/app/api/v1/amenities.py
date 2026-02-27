@@ -45,6 +45,9 @@ class AmenityResource(Resource):
         """Get amenity details by ID"""
         amenity = facade.get_amenity(amenity_id)
 
+        if facade.get_amenity(amenity_id) is None:
+            return {'error': 'Amenity not found'}, 404
+
         return {'id': amenity.id, 'name': amenity.name}, 200
 
     @api.expect(amenity_model, validate=True)
@@ -56,7 +59,10 @@ class AmenityResource(Resource):
         amenity_data = api.payload
 
         if not amenity_data.name or len(amenity_data.name.strip()) < 2:
-            return {'error': 'amenity must have a name of 2 char even a bad name of 2 char'}, 400
+            return {'error': 'Invalid input data'}, 400
+
+        if facade.get_amenity(amenity_id) is None:
+            return {'error': 'Amenity not found'}, 404
 
         def test(pair):
             key, value = pair
