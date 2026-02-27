@@ -2,7 +2,6 @@ from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from datetime import datetime
 
-
 api = Namespace('reviews', description='Review operations')
 
 # Define the review model for input validation and documentation
@@ -38,6 +37,7 @@ class ReviewList(Resource):
             return key in dict_review_model.keys()
 
         review = facade.create_review(dict(filter(test, data.items())))
+
         return {
             'id': review.id,
             'text': review.text,
@@ -93,6 +93,7 @@ class ReviewResource(Resource):
             'place_id': review.place.id,
             'updated_at': int(datetime.timestamp(review.updated_at)),
             'created_at': int(datetime.timestamp(review.created_at))
+
         } for review in reviews]
 
     @api.expect(review_model)
