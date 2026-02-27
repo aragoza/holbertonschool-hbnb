@@ -25,17 +25,17 @@ class UserList(Resource):
         user_data = api.payload
 
         if len(user_data['first_name'].strip()) < 3 or len(user_data['first_name'].strip()) > 50:
-            return {'error': 'first_name must be at least 3 characters long'}, 400
+            return {'error': 'Invalid input data'}, 400
 
         if len(user_data['last_name'].strip()) < 3 or len(user_data['last_name'].strip()) > 50:
-            return {'error': 'last_name must be at least 3 characters long'}, 400
+            return {'error': 'Invalid input data'}, 400
 
         ## Check if its real email pattern (with Regex)
         pattern = r"^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
         valid = match(pattern, user_data["email"])
 
         if not valid:
-            return {'error': 'Email is not valid'}, 400
+            return {'error': 'Invalid input data'}, 400
 
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
