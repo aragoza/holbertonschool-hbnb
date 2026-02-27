@@ -55,7 +55,7 @@ class PlaceList(Resource):
         if place_data['longitude'] < -180 or place_data['longitude'] > 180:
             return err, 400
         if facade.get_user(place_data['owner_id']) == None:
-            return err, 404
+            return err, 400
 
         place = facade.create_place(dict(filter(test, place_data.items())))
 
@@ -149,7 +149,7 @@ class PlaceResource(Resource):
             return err, 400
 
         if facade.get_place(place_id) is None:
-            return {'error': 'Place not found'}, 400
+            return {'error': 'Place not found'}, 404
 
         #if not isinstance(place_data.owner, user_model):
         #    return {'error': 'owner must be like the model'}, 400
