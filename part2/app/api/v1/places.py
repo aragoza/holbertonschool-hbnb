@@ -66,20 +66,7 @@ class PlaceList(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
-            'amenities': [
-                {
-                    'id': amenity.id,
-                    'name': amenity.name
-                } for amenity in place.amenities
-            ],
-            'updated_at': int(datetime.timestamp(place.updated_at)),
-            'created_at': int(datetime.timestamp(place.created_at))
+            'owner_id': place_data['owner_id']
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')
