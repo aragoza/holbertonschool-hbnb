@@ -51,7 +51,7 @@ class PlaceList(Resource):
         if place_data['longitude'] < -180 or place_data['longitude'] > 180:
             return {'error': 'longitude must be float or int between -180 and 180'}, 400
         if facade.get_user(place_data['owner_id']) == None:
-            return {'error': 'the user does not exist'}, 400
+            return {'error': 'the user does not exist'}, 404
 
         place = facade.create_place(dict(filter(test, place_data.items())))
 
