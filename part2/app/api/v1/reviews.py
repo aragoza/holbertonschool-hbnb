@@ -23,17 +23,18 @@ class ReviewList(Resource):
         data = api.payload
 
         if not data['text'] or len(data['text'].strip()) < 8:
-            return {'error': "text must be at least 8 characters long"}, 400
+            return {'error': 'Invalid input data'}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
-            return {'error': 'Rating must be betweeen 0 and 5'}
+            return {'error': 'Invalid input data'}
 
         place = facade.get_place(data['place_id'])
         if not place:
-            return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
+            return {'error': 'Invalid input data'}, 400
 
         if facade.get_user(data['user_id']) == None:
-            return {'error': "User with id {} does not exist".format(data['user_id'])}, 404
+            return {'error': 'Invalid input data'}, 400
+
         def test(pair):
             key, value = pair
             return key in dict_review_model.keys()
@@ -87,6 +88,9 @@ class ReviewResource(Resource):
             }
 
         reviews = facade.get_reviews_by_place(review_id)
+        if not review and len(reviews) == 0:
+            return {'error': 'Review not found'}, 404
+
         return [{
             'id': review.id,
             'text': review.text,
@@ -107,14 +111,14 @@ class ReviewResource(Resource):
         data = api.payload
 
         if len(data['text'].strip()) < 8:
-            return {'error': "text must be at least 8 characters long"}, 400
+            return {'error': 'Invalid input data'}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
-            return {'error': 'Rating must be betweeen 0 and 5'}
+            return {'error': 'Invalid input data'}
 
         place = facade.get_place(data['place_id'])
         if not place:
-            return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
+            return {'error': 'Invalid input data'}, 400
 
         facade.update_review(review_id, data)
 
@@ -122,6 +126,8 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        facade.delete_review(review_id)
+        if not facade.get_review(review_id):
+            return {'error': 'Review not found'}, 404
 
+        facade.delete_review(review_id)
         return {'message': 'Review deleted'}
