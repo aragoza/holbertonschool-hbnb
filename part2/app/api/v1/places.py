@@ -42,18 +42,20 @@ class PlaceList(Resource):
             key, value = pair
             return key in dict_place_model.keys()
 
-        if not place_data['title'] or len(place_data['title']) < 3:
-            return {'error': 'a place need a good title'}, 400
+        err = {'error': 'Invalid input data'}
+
+        if not place_data['title'] or len(place_data['title'].strip()) < 3:
+            return err, 400
         if not place_data['description']:
             place_data['description'] = ""
         if not isinstance(place_data['price'], (float, int)) or place_data['price'] < 0:
-            return {'error': 'price must be a positive float or integer'}, 400
+            return err, 400
         if place_data['latitude'] < -90 or place_data['latitude'] > 90:
-            return {'error': 'latitude must be float or int between -90 and 90'}, 400
+            return err, 400
         if place_data['longitude'] < -180 or place_data['longitude'] > 180:
-            return {'error': 'longitude must be float or int between -180 and 180'}, 400
+            return err, 400
         if facade.get_user(place_data['owner_id']) == None:
-            return {'error': 'the user does not exist'}, 404
+            return err, 404
 
         place = facade.create_place(dict(filter(test, place_data.items())))
 
@@ -86,22 +88,8 @@ class PlaceList(Resource):
         return [{
             'id': place.id,
             'title': place.title,
-            'description': place.description,
-            'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
-            },
-            'amenities': [
-                {
-                    'id': amenity.id,
-                    'name': amenity.name
-                } for amenity in place.amenities
-            ],
             'updated_at': int(datetime.timestamp(place.updated_at)),
             'created_at': int(datetime.timestamp(place.created_at))
         } for place in facade.get_all_places()]
@@ -149,14 +137,19 @@ class PlaceResource(Resource):
             key, value = pair
             return key in dict_place_model.keys()
 
-        if not place_data['title'] or len(place_data['title']) < 3 or len(place_data['title']) > 100:
-            return {'error': 'a place need a good title'}, 400
+        err = {'error': 'Invalid input data'}
+
+        if not place_data['title'] or len(place_data['title'].strip()) < 3 or len(place_data['title'].strip()) > 100:
+            return err, 400
         if not isinstance(place_data['price'], (float, int)) or place_data['price'] < 0:
-            return {'error': 'price must be a positive float or integer'}, 400
+            return err, 400
         if place_data['latitude'] < -90 or place_data['latitude'] > 90:
-            return {'error': 'latitude must be float or int between -90 and 90'}, 400
+            return err, 400
         if place_data['longitude'] < -180 or place_data['longitude'] > 180:
-            return {'error': 'longitude must be float or int between -180 and 180'}, 400
+            return err, 400
+
+        if facade.get_place(place_id) is None:
+            return {'error': 'Place not found'}, 400
 
         #if not isinstance(place_data.owner, user_model):
         #    return {'error': 'owner must be like the model'}, 400
