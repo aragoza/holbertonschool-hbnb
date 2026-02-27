@@ -22,7 +22,7 @@ class ReviewList(Resource):
         """Register a new review"""
         data = api.payload
 
-        if len(data['text']) < 8:
+        if not data['text'] or len(data['text']) < 8:
             return {'error': "text must be at least 8 characters long"}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
@@ -32,6 +32,8 @@ class ReviewList(Resource):
         if not place:
             return {'error': f"Place with id {data['place_id']} doesn't exist"}, 404
 
+        if facade.get_user(data['user_id']) == None:
+            return {'error': "User with id {} does not exist".format(data['user_id'])}, 404
         def test(pair):
             key, value = pair
             return key in dict_review_model.keys()
