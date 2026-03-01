@@ -1,7 +1,7 @@
 # HBNB part2
 
 ## Decription
-
+***The aim of this part is to implement the business logic and the presentation logic***
 
 ## Business logic layer
 
