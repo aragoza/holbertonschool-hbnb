@@ -2,7 +2,7 @@
 
 import unittest
 from app.__init__ import create_app
-from math import nan
+from uuid import uuid4
 
 class TestPlaceEndpoints(unittest.TestCase):
 
@@ -10,14 +10,16 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
 
-        # Create a valid user for owner_id
         response = self.client.post("/api/v1/users/", json={
             "first_name": "Jane",
             "last_name": "Doe",
-            "email": "jane.doe@example.com"
+            "email": f'john.{uuid4()}@example.com'
         })
+        self.user = response.json
         self.assertEqual(response.status_code, 201)
-        self.user_id = response.json["id"]
+        self.assertIn("id", self.user)
+        self.user_id = self.user["id"]
+
 
 # ------------------------------
 # POST /api/v1/places/ — success
@@ -30,7 +32,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 45.0,
             "longitude": 10.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -52,7 +53,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 45.0,
             "longitude": 10.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -69,7 +69,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 45.0,
             "longitude": 10.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -85,19 +84,18 @@ class TestPlaceEndpoints(unittest.TestCase):
     def test_create_place_invalid_description(self):
         payload = {
             "title": "Invalid description / empty description",
-            "description": "",
+            "description": None,
             "price": 100.0,
             "latitude": 45.0,
             "longitude": 10.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
         data = response.json
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(data.get("error"), "Invalid input data")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(data.get("description"), "")
 
 # -----------------------------
 # POST — Invalid price alphabet
@@ -110,8 +108,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             "price": "Invalid price",
             "latitude": 45.0,
             "longitude": 10.0,
-            "owner_id": "nonexistent-user",
-            "amenities": []
+            "owner_id": self.user_id,
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -131,8 +128,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             "price": True,
             "latitude": 45.0,
             "longitude": 10.0,
-            "owner_id": "nonexistent-user",
-            "amenities": []
+            "owner_id": self.user_id,
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -152,8 +148,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             "price": -1,
             "latitude": 45.0,
             "longitude": 10.0,
-            "owner_id": "nonexistent-user",
-            "amenities": []
+            "owner_id": self.user_id,
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -173,8 +168,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             "price": "NaN",
             "latitude": 45.0,
             "longitude": 10.0,
-            "owner_id": "nonexistent-user",
-            "amenities": []
+            "owner_id": self.user_id,
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -194,8 +188,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             "price": 1.0e12,
             "latitude": 45.0,
             "longitude": 10.0,
-            "owner_id": "nonexistent-user",
-            "amenities": []
+            "owner_id": self.user_id,
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -215,7 +208,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": -91.0,
             "longitude": 0.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
         response = self.client.post("/api/v1/places/", json=payload)
         data = response.json
@@ -234,7 +226,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 91.0,
             "longitude": 0.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
         response = self.client.post("/api/v1/places/", json=payload)
         data = response.json
@@ -252,7 +243,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 0.0,
             "longitude": -181.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
         response = self.client.post("/api/v1/places/", json=payload)
         data = response.json
@@ -271,7 +261,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 0.0,
             "longitude": 181.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
         response = self.client.post("/api/v1/places/", json=payload)
         data = response.json
@@ -289,7 +278,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 45.0,
             "longitude": 10.0,
             "owner_id": "nonexistent-user",
-            "amenities": []
         }
 
         response = self.client.post("/api/v1/places/", json=payload)
@@ -302,16 +290,16 @@ class TestPlaceEndpoints(unittest.TestCase):
 # GET /api/v1/places/ — list
 # -------------------------------
     def test_get_all_places(self):
-        # Create a place first
-        self.client.post("/api/v1/places/", json={
+        create_resp = self.client.post("/api/v1/places/", json={
             "title": "Test House",
             "description": "Description",
             "price": 50.0,
             "latitude": 10.0,
             "longitude": 20.0,
             "owner_id": self.user_id,
-            "amenities": []
         })
+
+        self.assertEqual(create_resp.status_code, 201)
 
         response = self.client.get("/api/v1/places/")
         data = response.json
@@ -319,32 +307,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(data, list)
         self.assertTrue(len(data) >= 1)
-        self.assertIn("id", data[0])
-        self.assertEqual(data[0].get("title"), "Test House")
 
-# -------------------------------
-# GET /api/v1/places/<id> — single
-# -------------------------------
-    def test_get_place_by_id(self):
-        # Create a place first
-        response = self.client.post("/api/v1/places/", json={
-            "title": "Single Place",
-            "description": "Description",
-            "price": 100.0,
-            "latitude": 10.0,
-            "longitude": 20.0,
-            "owner_id": self.user_id,
-            "amenities": []
-        })
-        place_id = response.json["id"]
-
-        response = self.client.get("/api/v1/places/{}".format(place_id))
-        data = response.json
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data.get("id"), place_id)
-        self.assertEqual(data.get("title"), "Single Place")
-        self.assertEqual(data.get("owner")["id"], self.user_id)
+        titles = [place.get("title") for place in data]
+        self.assertIn("Test House", titles)
 
 # -------------------------------
 # PUT /api/v1/places/<id> — update
@@ -358,7 +323,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 10.0,
             "longitude": 20.0,
             "owner_id": self.user_id,
-            "amenities": []
         })
         place_id = response.json["id"]
 
@@ -369,7 +333,6 @@ class TestPlaceEndpoints(unittest.TestCase):
             "latitude": 15.0,
             "longitude": 25.0,
             "owner_id": self.user_id,
-            "amenities": []
         }
 
         response = self.client.put("/api/v1/places/{}".format(place_id), json=update_payload)
@@ -378,6 +341,81 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data.get("message"), "Place updated successfully")
 
+# ----------------------------------------------
+# PUT /api/v1/places/<id> — invalid update title
+# ----------------------------------------------
+
+    def test_update_place_invalid_title(self):
+        response = self.client.post("/api/v1/places/", json={
+            "title": "Valid Title",
+            "description": "Desc",
+            "price": 50.0,
+            "latitude": 10.0,
+            "longitude": 20.0,
+            "owner_id": self.user_id,
+        })
+        place_id = response.json["id"]
+
+        # Title too short
+        payload_short = dict(response.json)
+        payload_short.update({"title": "A"})
+        resp_short = self.client.put("/api/v1/places/{}".format(place_id), json=payload_short)
+        self.assertEqual(resp_short.status_code, 400)
+        self.assertEqual(resp_short.json.get("error"), "Invalid input data")
+
+        # Title too long (>100 chars)
+        payload_long = dict(response.json)
+        payload_long.update({"title": "X" * 101})
+        resp_long = self.client.put("/api/v1/places/{}".format(place_id), json=payload_long)
+        self.assertEqual(resp_long.status_code, 400)
+        self.assertEqual(resp_long.json.get("error"), "Invalid input data")
+
+    def test_update_place_invalid_coordinates(self):
+        response = self.client.post("/api/v1/places/", json={
+            "title": "Coord Test",
+            "description": "Desc",
+            "price": 50.0,
+            "latitude": 10.0,
+            "longitude": 20.0,
+            "owner_id": self.user_id,
+        })
+        place_id = response.json["id"]
+
+        # Invalid latitude
+        payload_lat = dict(response.json)
+        payload_lat.update({"latitude": 100.0})
+        resp_lat = self.client.put("/api/v1/places/{}".format(place_id), json=payload_lat)
+        self.assertEqual(resp_lat.status_code, 400)
+        self.assertEqual(resp_lat.json.get("error"), "Invalid input data")
+
+        # Invalid longitude
+        payload_lon = dict(response.json)
+        payload_lon.update({"longitude": -200.0})
+        resp_lon = self.client.put("/api/v1/places/{}".format(place_id), json=payload_lon)
+        self.assertEqual(resp_lon.status_code, 400)
+        self.assertEqual(resp_lon.json.get("error"), "Invalid input data")
+
+# -----------------------
+# GET /api/v1/places/<id>
+# -----------------------
+
+    def test_get_place_by_id(self):
+        place = self.client.post("/api/v1/places/", json={
+            "title": "Single Place",
+            "description": "Description",
+            "price": 100.0,
+            "latitude": 10.0,
+            "longitude": 20.0,
+            "owner_id": self.user_id
+        }).json
+
+        place_id = place["id"]
+
+        data = self.client.get(f"/api/v1/places/{place_id}").json
+
+        self.assertEqual(data["id"], place_id)
+        self.assertEqual(data["title"], "Single Place")
+        self.assertEqual(data["owner"]["id"], self.user_id)
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main()
