@@ -44,11 +44,11 @@ class PlaceList(Resource):
 
         err = {'error': 'Invalid input data'}
 
-        if not place_data['title'] or len(place_data['title'].strip()) < 3:
+        if not place_data['title'] or len(place_data['title'].strip()) < 3 or len(place_data['title'].strip()) > 100:
             return err, 400
         if not place_data['description']:
             place_data['description'] = ""
-        if not isinstance(place_data['price'], (float, int)) or place_data['price'] < 0 or place_data['price'] > 1.00e9:
+        if not type(place_data['price']) in [float, int] or place_data['price'] < 0 or place_data['price'] > 1.00e9:
             return err, 400
         if place_data['latitude'] < -90 or place_data['latitude'] > 90:
             return err, 400
