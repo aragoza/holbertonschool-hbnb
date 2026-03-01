@@ -89,10 +89,10 @@ use the command : ```pip install -r requirments.txt```
 
 Contributors names and contact info
 
-Name : email \n
-Elliot CHARLET : _charlet.elliot@gmail.com_ \n
-Ilan DEVERSENNE : _ilan.deversenne@holbertonstudents.com_ \n
-Robin BOUVIER : _12229@holbertonstudents.com_ \n
+**Name : email**
+- Elliot CHARLET : _charlet.elliot@gmail.com_
+- Ilan DEVERSENNE : _ilan.deversenne@holbertonstudents.com_
+- Robin BOUVIER : _12229@holbertonstudents.com_
 
 ## License
 
