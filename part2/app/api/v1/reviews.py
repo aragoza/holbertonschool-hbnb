@@ -26,7 +26,7 @@ class ReviewList(Resource):
             return {'error': 'Invalid input data'}, 400
 
         if data['rating'] < 0 or data['rating'] > 5:
-            return {'error': 'Invalid input data'}
+            return {'error': 'Invalid input data'}, 400
 
         place = facade.get_place(data['place_id'])
         if not place:
