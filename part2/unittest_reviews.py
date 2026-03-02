@@ -115,6 +115,13 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(data.get('place_id', None), review['place_id'])
         self.assertEqual(data.get('user_id', None), review['user_id'])
 
+    def test_get_by_bad_id(self):
+        response = self.client.get(f'/api/v1/reviews/{uuid4()}')
+        data = response.json
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data.get('error', None), 'Review not found')
+
     def test_delete(self):
         response = self.client.post('/api/v1/reviews/', json={
             'text': f'Good rate',
