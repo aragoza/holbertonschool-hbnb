@@ -122,6 +122,116 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data.get('error', None), 'Review not found')
 
+    def test_update_review(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        review = response.json
+
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.put(f'/api/v1/reviews/{review["id"]}', json={
+            'text': f'Bad rate',
+            'rating': 2,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        data = response.json
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data.get('message', None), 'Review updated successfully')
+
+    def test_update_review_with_bad_text(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        review = response.json
+
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.put(f'/api/v1/reviews/{review["id"]}', json={
+            'text': f'ab',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        data = response.json
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data.get('error', None), 'Invalid input data')
+
+    def test_update_review_with_bad_rating(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        review = response.json
+
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.put(f'/api/v1/reviews/{review["id"]}', json={
+            'text': f'Good rate',
+            'rating': 8,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        data = response.json
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data.get('error', None), 'Invalid input data')
+
+    def test_update_review_with_bad_user_id(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        review = response.json
+
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.put(f'/api/v1/reviews/{review["id"]}', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': uuid4()
+        })
+        data = response.json
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data.get('error', None), 'Invalid input data')
+
+    def test_update_review_with_bad_place_id(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': self.place['id'],
+            'user_id': self.user['id']
+        })
+        review = response.json
+
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.put(f'/api/v1/reviews/{review["id"]}', json={
+            'text': f'Good rate',
+            'rating': 4,
+            'place_id': uuid4(),
+            'user_id': self.user['id']
+        })
+        data = response.json
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data.get('error', None), 'Invalid input data')
+
     def test_delete(self):
         response = self.client.post('/api/v1/reviews/', json={
             'text': f'Good rate',
