@@ -32,7 +32,7 @@ class User(BaseModel):
 
     @first_name.setter
     def first_name(self, value: str):
-        if len(value.strip()) < 3:
+        if len(value.strip()) < 3 or len(value.strip()) > 50:
             raise BadRequest('Invalid input data')
 
         self.__first_name = value
@@ -43,7 +43,7 @@ class User(BaseModel):
 
     @last_name.setter
     def last_name(self, value: str):
-        if len(value.strip()) < 3:
+        if len(value.strip()) < 3 or len(value.strip()) > 50:
             raise BadRequest('Invalid input data')
 
         self.__last_name = value
