@@ -58,7 +58,7 @@ class AmenityResource(Resource):
         """Update an amenity's information"""
         amenity_data = api.payload
 
-        if not amenity_data.name or len(amenity_data.name.strip()) < 2:
+        if not amenity_data['name'] or len(amenity_data['name'].strip()) < 2:
             return {'error': 'Invalid input data'}, 400
 
         if facade.get_amenity(amenity_id) is None:
