@@ -1,8 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from datetime import datetime
-from re import match
-
 
 api = Namespace('users', description='User operations')
 
@@ -24,29 +22,15 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        if len(user_data['first_name'].strip()) < 3 or len(user_data['first_name'].strip()) > 50:
-            return {'error': 'Invalid input data'}, 400
-
-        if len(user_data['last_name'].strip()) < 3 or len(user_data['last_name'].strip()) > 50:
-            return {'error': 'Invalid input data'}, 400
-
-        ## Check if its real email pattern (with Regex)
-        pattern = r"^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
-        valid = match(pattern, user_data["email"])
-
-        if not valid:
-            return {'error': 'Invalid input data'}, 400
-
-        # Simulate email uniqueness check (to be replaced by real validation with persistence)
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user:
-            return {'error': 'Email already registered'}, 400
-
         def test(pair):
             key, value = pair
             return key in dict_user_model.keys()
 
-        new_user = facade.create_user(dict(filter(test, user_data.items())))
+        try:
+            new_user = facade.create_user(dict(filter(test, user_data.items())))
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
         return {
             'id': new_user.id,
@@ -75,9 +59,12 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     def get(self, user_id):
         """Get user details by ID"""
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
+        try:
+            user = facade.get_user(user_id)
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
+
         return {
             'id': user.id,
             'first_name': user.first_name,
@@ -92,11 +79,12 @@ class UserResource(Resource):
     def put(self, user_id):
         data = api.payload
 
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
+        try:
+            user = facade.update_user(user_id, data)
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
-        user = facade.update_user(user_id, data)
         return {
             'id': user.id,
             'first_name': user.first_name,
