@@ -5,6 +5,8 @@ from app.models.place import Place, User
 from app.models.review import Review
 from app.models.amenity import Amenity
 
+from app.api.exceptions import BadRequest, NotFound
+
 
 class HBnBFacade:
     def __init__(self):
@@ -53,15 +55,30 @@ class HBnBFacade:
 
     ## User
     def create_user(self, user_data):
+        if self.user_repo.get_by_attribute('email', user_data['email']):
+            raise BadRequest('Email already registered')
+
         user = User(**user_data)
         self.user_repo.add(user)
+
+        return user
+
+    def update_user(self, user_id, user_data):
+        self.user_repo.update(user_id, user_data)
+
+        user = self.user_repo.get(user_id)
+        if not user:
+            raise NotFound('User not found')
+
         return user
 
     def get_all_users(self) -> dict[User]:
         return self.user_repo.get_all()
 
     def get_user(self, user_id: str) -> User:
-        return self.user_repo.get(user_id)
+        user = self.user_repo.get(user_id)
+        if not user:
+            raise NotFound('User not found')
 
     def get_user_by_email(self, email: str) -> User:
         return self.user_repo.get_by_attribute('email', email)
