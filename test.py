@@ -17,6 +17,7 @@ try:
         user = req.json()
     else:
         print("Failed to create user")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -32,6 +33,7 @@ try:
         amenity = req.json()
     else:
         print("Failed to create amenity")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -51,6 +53,7 @@ try:
         place = req.json()
     else:
         print("Failed to create place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -76,6 +79,7 @@ try:
         review = req.json()
     else:
         print("Failed to create review")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -98,6 +102,7 @@ try:
         updated_place = req.json()
     else:
         print("Failed to update place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -111,6 +116,7 @@ try:
         fetch_place = req.json()
     else:
         print("Failed to fetch place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
