@@ -113,6 +113,8 @@ class HBnBFacade:
         if not user:
             raise NotFound('User not found')
 
+        return user
+
     def get_user_by_email(self, email: str) -> User:
         return self.user_repo.get_by_attribute('email', email)
 
