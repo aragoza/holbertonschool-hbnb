@@ -105,9 +105,11 @@ class HBnBFacade:
     def create_review(self, review_data: dict):
         review_data['user'] = self.user_repo.get(review_data['user_id'])
         review_data['place'] = self.place_repo.get(review_data['place_id'])
-
         del review_data['user_id']
         del review_data['place_id']
+
+        if not review_data['user'] or not review_data['place']:
+            raise BadRequest('Invalid input data')
 
         review = Review(**review_data)
         self.review_repo.add(review)
@@ -115,7 +117,11 @@ class HBnBFacade:
         return review
 
     def get_review(self, review_id):
-        return self.review_repo.get(review_id)
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise NotFound('Review not found')
+
+        return review
 
     def get_all_reviews(self) -> dict:
         return self.review_repo.get_all()
@@ -127,5 +133,14 @@ class HBnBFacade:
     def update_review(self, review_id, review_data):
         self.review_repo.update(review_id, review_data)
 
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise NotFound('Review not found')
+
+        return review
+
     def delete_review(self, review_id):
+        if not self.review_repo.get(review_id):
+            raise NotFound('Review not found')
+
         self.review_repo.delete(review_id)
