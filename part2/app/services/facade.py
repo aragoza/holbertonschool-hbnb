@@ -15,42 +15,75 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
-    ## Place
+   ## Place
+
     def create_place(self, place_data):
-        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        place_data['owner'] = self.user_repo.get(place_data['owner_id'])
-        del place_data['owner_id']
+        owner = self.user_repo.get(place_data['owner_id'])
+        if owner is None:
+            raise NotFound("Owner not found")
 
-        place = Place(**place_data)
+        amenity_ids = place_data.get('amenities', [])
+        amenities = []
+
+        for amenity_id in amenity_ids:
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity is None:
+                raise NotFound("Amenity not found")
+            amenities.append(amenity)
+
+        place = Place(
+            title=place_data['title'],
+            description=place_data.get('description', ""),
+            price=place_data['price'],
+            latitude=place_data['latitude'],
+            longitude=place_data['longitude'],
+            owner=owner
+        )
+
+        place.add_amenities(amenities)
+
         self.place_repo.add(place)
-
-        if 'amenities' in place_data.keys():
-            amenities = []
-            for amenity_id in place_data['amenities']:
-                amenity = self.amenity_repo.get(amenity_id)
-                amenities.append(amenity)
-            place.amenities = amenities
 
         return place
 
-    def get_place(self, place_id: str) -> Place:
+
+    def get_place(self, place_id: str):
         return self.place_repo.get(place_id)
+
 
     def get_all_places(self):
         return self.place_repo.get_all()
 
+
     def update_place(self, place_id, place_data):
-        place_data['owner'] = self.user_repo.get(place_data['owner_id'])
-        del place_data['owner_id']
+        place = self.place_repo.get(place_id)
 
-        if 'amenities' in place_data.keys():
+        if place is None:
+            raise NotFound("Place not found")
+
+        clean_data = place_data.copy()
+
+        if 'owner_id' in clean_data:
+            owner = self.user_repo.get(clean_data['owner_id'])
+            if owner is None:
+                raise NotFound("Owner not found")
+            clean_data['owner'] = owner
+            del clean_data['owner_id']
+
+        if 'amenities' in clean_data:
             amenities = []
-            for amenity_id in place_data['amenities']:
+            for amenity_id in clean_data['amenities']:
                 amenity = self.amenity_repo.get(amenity_id)
+                if amenity is None:
+                    raise NotFound("Amenity {} not found".format(amenity_id))
                 amenities.append(amenity)
-            place_data['amenities'] = amenities
 
-        self.place_repo.update(place_id, place_data)
+            clean_data['amenities'] = amenities
+
+        place.update(clean_data)
+
+        self.place_repo.update(place_id, place)
+
 
 
     ## User
