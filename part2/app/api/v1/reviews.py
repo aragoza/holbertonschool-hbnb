@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from app.api.exceptions import NotFound
 from app.services import facade
 from datetime import datetime
 
@@ -22,24 +23,15 @@ class ReviewList(Resource):
         """Register a new review"""
         data = api.payload
 
-        if not data['text'] or len(data['text'].strip()) < 8:
-            return {'error': 'Invalid input data'}, 400
-
-        if data['rating'] < 0 or data['rating'] > 5:
-            return {'error': 'Invalid input data'}, 400
-
-        place = facade.get_place(data['place_id'])
-        if not place:
-            return {'error': 'Invalid input data'}, 400
-
-        if facade.get_user(data['user_id']) == None:
-            return {'error': 'Invalid input data'}, 400
-
         def test(pair):
             key, value = pair
             return key in dict_review_model.keys()
 
-        review = facade.create_review(dict(filter(test, data.items())))
+        try:
+            review = facade.create_review(dict(filter(test, data.items())))
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
         return {
             'id': review.id,
@@ -54,20 +46,15 @@ class ReviewList(Resource):
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        result = []
-        reviews = facade.get_all_reviews()
-        for review in reviews:
-            result.append({
-                'id': review.id,
-                'text': review.text,
-                'rating': review.rating,
-                'user_id': review.user.id,
-                'place_id': review.place.id,
-                'updated_at': int(datetime.timestamp(review.updated_at)),
-                'created_at': int(datetime.timestamp(review.created_at))
-            })
-
-        return result
+        return [{
+            'id': review.id,
+            'text': review.text,
+            'rating': review.rating,
+            'user_id': review.user.id,
+            'place_id': review.place.id,
+            'updated_at': int(datetime.timestamp(review.updated_at)),
+            'created_at': int(datetime.timestamp(review.created_at))
+        } for review in facade.get_all_reviews()]
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -75,8 +62,8 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        review = facade.get_review(review_id)
-        if review:
+        try:
+            review = facade.get_review(review_id)
             return {
                 'id': review.id,
                 'text': review.text,
@@ -87,20 +74,26 @@ class ReviewResource(Resource):
                 'created_at': int(datetime.timestamp(review.created_at))
             }
 
-        reviews = facade.get_reviews_by_place(review_id)
-        if not review or len(reviews) == 0:
-            return {'error': 'Review not found'}, 404
+        except NotFound:
+            try:
+                reviews = facade.get_reviews_by_place(review_id)
+                return [{
+                    'id': review.id,
+                    'text': review.text,
+                    'rating': review.rating,
+                    'user_id': review.user.id,
+                    'place_id': review.place.id,
+                    'updated_at': int(datetime.timestamp(review.updated_at)),
+                    'created_at': int(datetime.timestamp(review.created_at))
+                } for review in reviews]
 
-        return [{
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user.id,
-            'place_id': review.place.id,
-            'updated_at': int(datetime.timestamp(review.updated_at)),
-            'created_at': int(datetime.timestamp(review.created_at))
+            except Exception as e:
+                if hasattr(e, 'httpcode'):
+                    return {'error': str(e)}, e.httpcode
 
-        } for review in reviews]
+        except Exception as e:
+                if hasattr(e, 'httpcode'):
+                    return {'error': str(e)}, e.httpcode
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -110,20 +103,11 @@ class ReviewResource(Resource):
         """Update a review's information"""
         data = api.payload
 
-        if len(data['text'].strip()) < 8:
-            return {'error': 'Invalid input data'}, 400
-
-        if data['rating'] < 0 or data['rating'] > 5:
-            return {'error': 'Invalid input data'}, 400
-
-        place = facade.get_place(data['place_id'])
-        if not place:
-            return {'error': 'Invalid input data'}, 400
-
-        if facade.get_user(data['user_id']) == None:
-            return {'error': 'Invalid input data'}, 400
-
-        facade.update_review(review_id, data)
+        try:
+            review = facade.update_review(review_id, data)
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
         return {'message': 'Review updated successfully'}
 
@@ -131,8 +115,10 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        if not facade.get_review(review_id):
-            return {'error': 'Review not found'}, 404
+        try:
+            facade.delete_review(review_id)
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
-        facade.delete_review(review_id)
         return {'message': 'Review deleted'}
