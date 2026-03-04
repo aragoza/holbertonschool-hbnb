@@ -53,11 +53,11 @@ It is used to be inherited by the other class models, and it implement general f
         - PUT /api/v1/amenities/{amenity_id}
 
 
-### doc swagger
+## Doc swagger
 
 ```http://127.0.0.1:5000/api/v1```
 
-### Edge case for the attribute of a class and there instance
+## Edge case for the attribute of a class and there instance
 
 - **User:**
   - Ensure that the `first_name`, `last_name`, and `email` attributes are not empty.
@@ -79,7 +79,7 @@ It is used to be inherited by the other class models, and it implement general f
 - **Amenity**
   - Ensure that `name` is not empty and is between 3 and 50 char
 
-## dependencies
+## Dependencies
 
 1. **requirements.txt**
 
