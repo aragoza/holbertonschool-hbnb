@@ -57,6 +57,27 @@ It is used to be inherited by the other class models, and it implement general f
 
 ```http://127.0.0.1:5000/api/v1```
 
+### Edge case for the attribute of a class and there instance
+
+- **User:**
+  - Ensure that the `first_name`, `last_name`, and `email` attributes are not empty.
+  - Ensure that the length of `first_name` and `last_name` is in [3, 50]
+  - Ensure that the `email` is in a valid email format.
+
+- **Place:**
+  - The `description` should be less than 500 character
+  - Ensure that `title` is not empty and is between 3 and 50 char.
+  - Ensure that `price` is a positive number.
+  - Ensure that `latitude` is between -90 and 90.
+  - Ensure that `longitude` is between -180 and 180.
+  - Ensure that `user_id` and `amenities_id` are valid entities.
+
+- **Review:**
+  - Ensure that `text` is not empty.
+  - Ensure that `user_id` and `place_id` reference valid entities.
+
+- **Amenity**
+  - Ensure that `name` is not empty and is between 3 and 50 char
 
 ## dependencies
 
