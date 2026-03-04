@@ -11,7 +11,7 @@ amenity_model = api.model('Amenity', dict_amenity_model)
 
 @api.route('/')
 class AmenityList(Resource):
-    @api.expect(amenity_model, validate=True)
+    @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
@@ -21,8 +21,12 @@ class AmenityList(Resource):
         def test(pair):
             key, value = pair
             return key in dict_amenity_model.keys()
- 
-        new_amenity = facade.create_amenity(dict(filter(test, amenity_data.items())))
+        try:
+            new_amenity = facade.create_amenity(dict(filter(test, amenity_data.items())))
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
+
         return {'id': new_amenity.id, 'name': new_amenity.name}, 201
 
     @api.response(200, 'List of amenities retrieved successfully')
@@ -43,14 +47,15 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     def get(self, amenity_id):
         """Get amenity details by ID"""
-        amenity = facade.get_amenity(amenity_id)
-
-        if facade.get_amenity(amenity_id) is None:
-            return {'error': 'Amenity not found'}, 404
+        try:
+            amenity = facade.get_amenity(amenity_id)
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
         return {'id': amenity.id, 'name': amenity.name}, 200
 
-    @api.expect(amenity_model, validate=True)
+    @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
@@ -58,15 +63,14 @@ class AmenityResource(Resource):
         """Update an amenity's information"""
         amenity_data = api.payload
 
-        if not amenity_data.name or len(amenity_data.name.strip()) < 2:
-            return {'error': 'Invalid input data'}, 400
-
-        if facade.get_amenity(amenity_id) is None:
-            return {'error': 'Amenity not found'}, 404
-
         def test(pair):
             key, value = pair
             return key in dict_amenity_model.keys()
-        amenity = facade.update_amenity(amenity_id, dict(filter(test, amenity_data.items())))
+
+        try:
+            amenity = facade.update_amenity(amenity_id, dict(filter(test, amenity_data.items())))
+        except Exception as e:
+            if hasattr(e, 'httpcode'):
+                return {'error': str(e)}, e.httpcode
 
         return {'id': amenity.id, 'name': amenity.name}, 200

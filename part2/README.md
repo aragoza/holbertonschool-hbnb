@@ -53,12 +53,33 @@ It is used to be inherited by the other class models, and it implement general f
         - PUT /api/v1/amenities/{amenity_id}
 
 
-### doc swagger
+## Doc swagger
 
 ```http://127.0.0.1:5000/api/v1```
 
+## Edge case for the attribute of a class and there instance
 
-## dependencies
+- **User:**
+  - Ensure that the `first_name`, `last_name`, and `email` attributes are not empty.
+  - Ensure that the length of `first_name` and `last_name` is in [3, 50]
+  - Ensure that the `email` is in a valid email format.
+
+- **Place:**
+  - The `description` should be less than 500 character
+  - Ensure that `title` is not empty and is between 3 and 50 char.
+  - Ensure that `price` is a positive number.
+  - Ensure that `latitude` is between -90 and 90.
+  - Ensure that `longitude` is between -180 and 180.
+  - Ensure that `user_id` and `amenities_id` are valid entities.
+
+- **Review:**
+  - Ensure that `text` is not empty.
+  - Ensure that `user_id` and `place_id` reference valid entities.
+
+- **Amenity**
+  - Ensure that `name` is not empty and is between 3 and 50 char
+
+## Dependencies
 
 1. **requirements.txt**
 
@@ -83,6 +104,37 @@ use the command : ```pip install -r requirments.txt```
     - typing_extensions==4.15.0
     - Werkzeug==3.1.6
     - zipp==3.23.0
+
+## Test API (with curl)
+
+### Create user
+```
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com"}'
+```
+
+### Create amenity
+```
+curl -X POST http://localhost:5000/api/v1/amenities/ \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Wi-fi"}'
+```
+
+### Create place
+```
+curl -X POST http://localhost:5000/api/v1/places/ \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Cozy Apartment", "description": "A nice place to stay", "price": 100.0, "latitude": 37.7749, "longitude": -122.4194, "owner_id": "[REPLACE OWNER_ID]"}'
+```
+
+### Create review
+```
+curl -X POST http://localhost:5000/api/v1/reviews/ \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Great place to stay!", "rating": 5, "user_id": "[REPLACE USER_ID]", "place_id": "[REPLACE PLACE_ID]"}'
+```
+#### You can also test it on an API tester such as Postman
 
 
 ## Authors

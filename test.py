@@ -17,6 +17,7 @@ try:
         user = req.json()
     else:
         print("Failed to create user")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -32,6 +33,7 @@ try:
         amenity = req.json()
     else:
         print("Failed to create amenity")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -44,18 +46,20 @@ try:
             "price": 100.0,
             "latitude": 37.7749,
             "longitude": -122.4194,
-            "owner_id": user['id']
+            "owner_id": user['id'],
+            "amenities": []
         }
     )
     if req.status_code == 201:
         place = req.json()
     else:
         print("Failed to create place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
 try:
-    rate = randint(0, 5)
+    rate = randint(1, 5)
 
     word = 'good'
     if rate < 3:
@@ -76,6 +80,7 @@ try:
         review = req.json()
     else:
         print("Failed to create review")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -98,6 +103,7 @@ try:
         updated_place = req.json()
     else:
         print("Failed to update place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
@@ -105,12 +111,12 @@ try:
     req = requests.get(
         f"{url}/places/{place['id']}"
     )
-    print(req.status_code, req.text)
 
     if req.status_code == 200:
         fetch_place = req.json()
     else:
         print("Failed to fetch place")
+        print(req.status_code, req.text)
 except Exception as e:
     print(e)
 
