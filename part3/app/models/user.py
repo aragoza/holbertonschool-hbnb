@@ -2,6 +2,7 @@
 
 from app.models.base_model import BaseModel
 from app.api.exceptions import BadRequest
+from app import bcrypt
 from re import match
 
 class User(BaseModel):
@@ -9,7 +10,7 @@ class User(BaseModel):
     Docstring for User
     """
     # we will have to import an email validator (maybe regex)
-    def __init__(self, first_name: str, last_name: str, email, is_admin: bool=False):
+    def __init__(self, first_name: str, last_name: str, email: str, password: str, is_admin: bool=False):
         """
         Docstring for __init__
 
@@ -25,6 +26,8 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places_owned = []
+
+        self.hash_password(password)
 
     @property
     def first_name(self):
@@ -68,3 +71,11 @@ class User(BaseModel):
         """
         pattern = r"^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
         return match(pattern, email) is not None
+
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
