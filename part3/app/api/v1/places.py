@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -21,8 +22,13 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Unauthorized user')
+    @jwt_required()
     def post(self):
         """Create a new place"""
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
 
         try:
             place = facade.create_place(api.payload)
@@ -46,8 +52,13 @@ class PlaceList(Resource):
             ]
         }, 201
     @api.response(200, 'List of places retrieved successfully')
+    @api.response(401, 'Unauthorized user')
+    @jwt_required()
     def get(self):
         """Get all places"""
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
 
         places = facade.get_all_places()
 
@@ -60,14 +71,17 @@ class PlaceList(Resource):
             'updated_at': int(datetime.timestamp(place.updated_at))
         } for place in places]
 
-
 @api.route('/<string:place_id>')
-@api.response(200, 'Place details retrieved successfully')
-@api.response(404, 'Place not found')
 class PlaceResource(Resource):
-
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    @api.response(401, 'Unauthorized user')
+    @jwt_required()
     def get(self, place_id):
         """Get place by ID"""
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
 
         place = facade.get_place(place_id)
         if place is None:
@@ -100,8 +114,13 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Unauthorized user')
+    @jwt_required()
     def put(self, place_id):
         """Update place"""
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
 
         try:
             facade.update_place(place_id, api.payload)
