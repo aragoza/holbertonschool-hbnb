@@ -2,15 +2,25 @@
 
 from app.models.base_model import BaseModel
 from app.api.exceptions import BadRequest
-from app import bcrypt
+from app import db, bcrypt
 from re import match
+
 
 class User(BaseModel):
     """
     Docstring for User
     """
+
+    __tablename__ = 'users'
+
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
     # we will have to import an email validator (maybe regex)
-    def __init__(self, first_name: str, last_name: str, email: str, password: str, is_admin: bool=False):
+    def __init__(self, first_name: str, last_name: str, email: str, is_admin: bool=False):
         """
         Docstring for __init__
 
@@ -26,8 +36,6 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places_owned = []
-
-        self.hash_password(password)
 
     @property
     def first_name(self):
