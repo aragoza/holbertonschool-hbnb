@@ -8,13 +8,14 @@ api = Namespace('users', description='User operations')
 dict_user_model = {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user')
 }
 user_model = api.model('User', dict_user_model)
 
 @api.route('/')
 class UserList(Resource):
-    @api.expect(user_model)
+    @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
@@ -22,12 +23,8 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        def test(pair):
-            key, value = pair
-            return key in dict_user_model.keys()
-
         try:
-            new_user = facade.create_user(dict(filter(test, user_data.items())))
+            new_user = facade.create_user(user_data)
         except Exception as e:
             if hasattr(e, 'httpcode'):
                 return {'error': str(e)}, e.httpcode
