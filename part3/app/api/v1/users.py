@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('users', description='User operations')
 
@@ -42,7 +43,12 @@ class UserList(Resource):
 
     @api.response(200, 'User retrieved successfully')
     @api.response(404, 'User not found')
+    @jwt_required()
     def get(self):
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
+
         return [{
             'id': user.id,
             'first_name': user.first_name,
@@ -56,8 +62,13 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
+    @jwt_required()
     def get(self, user_id):
         """Get user details by ID"""
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
+
         try:
             user = facade.get_user(user_id)
         except Exception as e:
@@ -75,8 +86,13 @@ class UserResource(Resource):
 
     @api.response(200, 'User has been updated')
     @api.response(404, 'User not found')
+    @jwt_required()
     def put(self, user_id):
         data = api.payload
+
+        actual_user = get_jwt_identity()
+        if not actual_user:
+            return {'error': 'Unauthorized user'}, 401
 
         try:
             user = facade.update_user(user_id, data)
