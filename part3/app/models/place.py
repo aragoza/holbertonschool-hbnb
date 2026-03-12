@@ -30,35 +30,35 @@ class Place(BaseModel):
         self.add_place_to_owner()
 
     @validates("title")
-    def validate_title(self, value):
+    def validate_title(self, key: str, value: str):
         if not value or len(value.strip()) < 3 or len(value.strip()) > 100:
             raise BadRequest('Invalid input data')
 
         return value
 
     @validates("description")
-    def validate_description(self, value):
+    def validate_description(self, key: str, value: str):
         if not value or len(value) > 500:
             return ""
 
         return value
 
     @validates("price")
-    def validate_price(self, value):
+    def validate_price(self, key: str, value: str):
         if not type(value) in (int, float) or value < 0 or value > 1.0e12:
             raise BadRequest('Invalid input data')
 
         return value
 
     @validates("latitude")
-    def validate_latitude(self, value):
+    def validate_latitude(self, key: str, value: str):
         if not type(value) in (int, float) or value < -90 or value > 90:
             raise BadRequest('Invalid input data')
 
         return float(value)
 
     @validates("longitude")
-    def validate_longitude(self, value):
+    def validate_longitude(self, key: str, value: str):
         if not type(value) in (int, float) or value < -180 or value > 180:
             raise BadRequest('Invalid input data')
 
