@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 
-from app.models.base_model import BaseModel
-from app.models.amenity import Amenity
-from app.models.user import User
+from app.models.baseclass import BaseModel
 from app.api.exceptions import BadRequest
+from app.models.amenity import Amenity
+from sqlalchemy.orm import validates
+from app.models.user import User
+from app import db
 
 
 class Place(BaseModel):
-    def __init__(self, title: str, description: str, price: float, latitude: float, longitude: float, owner: 'User'):
+    __tablename__ = 'places'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+
+    def __init__(self, title: str, description: str, price: float, latitude: float, longitude: float, owner: User):
         super().__init__()
         self.title = title
         self.description = description
@@ -19,60 +29,40 @@ class Place(BaseModel):
         self.amenities = []
         self.add_place_to_owner()
 
-    @property
-    def title(self):
-        return self.__title
-
-    @title.setter
-    def title(self, value):
+    @validates("title")
+    def validate_title(self, value):
         if not value or len(value.strip()) < 3 or len(value.strip()) > 100:
             raise BadRequest('Invalid input data')
-        self.__title = value.strip()
 
-    @property
-    def description(self):
-        return self.__description
+        return value
 
-    @description.setter
-    def description(self, value):
+    @validates("description")
+    def validate_description(self, value):
         if not value or len(value) > 500:
-            self.__description = ""
-        else:
-            self.__description = value
+            return ""
 
-    @property
-    def price(self):
-        return self.__price
+        return value
 
-    @price.setter
-    def price(self, value):
+    @validates("price")
+    def validate_price(self, value):
         if not type(value) in (int, float) or value < 0 or value > 1.0e12:
             raise BadRequest('Invalid input data')
-        self.__price = value
 
-    @property
-    def latitude(self):
-        return self.__latitude
+        return value
 
-    @latitude.setter
-    def latitude(self, value):
+    @validates("latitude")
+    def validate_latitude(self, value):
         if not type(value) in (int, float) or value < -90 or value > 90:
             raise BadRequest('Invalid input data')
-        self.__latitude = float(value)
 
-    @property
-    def longitude(self):
-        return self.__longitude
+        return float(value)
 
-    @longitude.setter
-    def longitude(self, value):
+    @validates("longitude")
+    def validate_longitude(self, value):
         if not type(value) in (int, float) or value < -180 or value > 180:
             raise BadRequest('Invalid input data')
-        self.__longitude = float(value)
 
-    @property
-    def owner_id(self):
-        return self.owner.id
+        return float(value)
 
     def add_review(self, review):
         self.reviews.append(review)
