@@ -21,6 +21,7 @@ class UserList(Resource):
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')
+    @jwt_required
     def post(self):
         """Register a new user"""
         user_data = api.payload
