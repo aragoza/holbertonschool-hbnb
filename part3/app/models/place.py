@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
-from sqlalchemy import Column, Integer, Float, String, ForeignKey
+from sqlalchemy import Table, Column, Float, String, ForeignKey
+from sqlalchemy.orm import validates, relationship
 from app.models.baseclass import BaseModel
 from app.api.exceptions import BadRequest
 from app.models.amenity import Amenity
-from sqlalchemy.orm import validates
 from app.models.user import User
 from app import db
+
+# Table for relationship between place and amenity
+place_amenity = Table('place_amenity',
+    Column('place_id', String(36), ForeignKey('places.id'), primary_key=True),
+    Column('amentiry_id', String(36), ForeignKey('amenities.id'), primary_key=True)
+)
 
 
 class Place(BaseModel):
@@ -18,6 +24,10 @@ class Place(BaseModel):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     user_id = Column(String(36), ForeignKey('users.id'), nullable=False)
+
+    amenities = relationship('Course', secondary=place_amenity, lazy='subquery',
+                           backref=db.backref('places', lazy=True))
+
 
     def __init__(self, title: str, description: str, price: float, latitude: float, longitude: float, user_id: str):
         super().__init__()
