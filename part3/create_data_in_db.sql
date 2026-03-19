@@ -37,27 +37,46 @@ CREATE TABLE IF NOT EXISTS amenities (
     name VARCHAR(255) UNIQUE
 )
 
-INSERT INTO users
+INSERT INTO users (
+    `id`,
+    `email`,
+    `first_name`,
+    `last_name`,
+    `password`,
+    `is_admin`
+)
 VALUES (
-    36c9050e-ddd3-4c3b-9731-9f487208bbc1,
-    admin@hbnb.io,
-    Admin,
-    HBnB,
-    $2a$12$iIY0XSc0TztcyhkfttsGtO/gUTorunCzu/YE8CpwxwD2wvHimahZ6,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    'admin@hbnb.io',
+    'Admin',
+    'HBnB',
+    '$2a$12$iIY0XSc0TztcyhkfttsGtO/gUTorunCzu/YE8CpwxwD2wvHimahZ6',
     TRUE
 )
 
-INSERT INTO amenities (name)
+INSERT INTO amenities (
+    id,
+    name
+)
 VALUES (
+    '95a2224b-4b5c-40b3-a727-f32d309575fd',
     'Wifi'
 )
 
-INSERT INTO amenities (name)
+INSERT INTO amenities (
+    id,
+    name
+)
 VALUES (
+    '90db30b4-08b0-43bc-8cc8-c8148924653f',
     'Swimming Pool'
 )
 
-INSERT INTO amenities (name)
+INSERT INTO amenities (
+    id,
+    name
+)
 VALUES (
+    '462cf7f9-c53e-4bf6-bf96-3c990a5c78a4',
     'Air Conditioning'
 )
