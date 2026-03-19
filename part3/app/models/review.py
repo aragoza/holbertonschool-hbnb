@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from sqlalchemy import Column, String, Integer, ForeignKey
 from app.models.baseclass import BaseModel
 from app.api.exceptions import BadRequest
 from app.models.place import Place, User
@@ -10,8 +11,9 @@ from app import db
 class Review(BaseModel):
     __tablename__ = 'reviews'
 
-    text = db.Column(db.String, nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
+    text = Column(String, nullable=False)
+    rating = Column(Integer, nullable=False)
+    place_id = Column(String(36), ForeignKey('places.id'), nullable=False)
 
     def __init__(self, text: str, rating: int, place: Place, user: User):
         super().__init__()
