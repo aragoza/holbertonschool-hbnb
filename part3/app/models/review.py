@@ -3,7 +3,7 @@
 from app.models.baseclass import BaseModel
 from app.api.exceptions import BadRequest
 from app.models.place import Place, User
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from app import db
 
 
@@ -12,6 +12,7 @@ class Review(BaseModel):
 
     text = db.Column(db.String, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
+    place = relationship('Place', backref='review', lazy=True)
 
     def __init__(self, text: str, rating: int, place: Place, user: User):
         super().__init__()
