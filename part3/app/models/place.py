@@ -24,6 +24,7 @@ class Place(BaseModel):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     user_id = Column(String(36), ForeignKey('users.id'), nullable=False)
+    reviews = relationship('Review', backref='place', lazy=True)
 
     amenities = relationship('Course', secondary=place_amenity, lazy='subquery',
                            backref=db.backref('places', lazy=True))
