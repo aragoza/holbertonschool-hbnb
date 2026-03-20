@@ -4,7 +4,6 @@ from app.services.repositories.amenity_repository import AmenityRepository
 from app.services.repositories.review_repository import ReviewRepository
 from app.services.repositories.place_repository import PlaceRepository
 from app.services.repositories.user_repository import UserRepository
-from app.persistence.repository import InMemoryRepository
 from app.api.exceptions import BadRequest, NotFound
 from app.models.place import Place, User
 from app.models.amenity import Amenity
@@ -16,7 +15,7 @@ class HBnBFacade:
         self.user_repo = UserRepository()
         self.place_repo = PlaceRepository()
         self.review_repo = ReviewRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.amenity_repo = AmenityRepository()
 
 
     ##############################################
