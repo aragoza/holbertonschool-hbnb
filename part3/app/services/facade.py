@@ -94,7 +94,7 @@ class HBnBFacade:
     ##############################################
 
     def create_user(self, user_data):
-        if self.user_repo.get_by_attribute('email', user_data['email']):
+        if self.user_repo.get_user_by_email(user_data['email']):
             raise BadRequest('Email already registered')
 
         user = User(**user_data)
