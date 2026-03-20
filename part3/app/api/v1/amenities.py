@@ -43,13 +43,8 @@ class AmenityList(Resource):
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(401, 'Unauthorized user')
-    @jwt_required()
     def get(self):
         """Retrieve a list of all amenities"""
-        actual_user = get_jwt_identity()
-        if not actual_user:
-            return {'error': 'Unauthorized user'}, 401
-
         amenities = facade.get_all_amenities()
         list_amenities = [{
                 "id": amenity.id,
@@ -64,13 +59,8 @@ class AmenityResource(Resource):
     @api.response(200, 'Amenity details retrieved successfully')
     @api.response(404, 'Amenity not found')
     @api.response(401, 'Unauthorized user')
-    @jwt_required()
     def get(self, amenity_id):
         """Get amenity details by ID"""
-        actual_user = get_jwt_identity()
-        if not actual_user:
-            return {'error': 'Unauthorized user'}, 401
-
         try:
             amenity = facade.get_amenity(amenity_id)
         except Exception as e:
