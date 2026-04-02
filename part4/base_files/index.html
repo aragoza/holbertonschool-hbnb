@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <title>List of Places</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Mandatory -->
+        <img class="logo" src="logo.png" alt="site-logo">
+        <div class="login-button">
+            <a class="login-button" href="login.html" id="login-link">Login</a>
+        </div>
+        <nav>
+            <div id="navigation">
+                <a href="index.html" id="index-link">Homepage</a>
+                <a href="login.html" id="login-link">Login</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section id="filter">
+            <label for="price-filter">Max Price:</label>
+            <select id="price-filter">
+                <!-- Options will be populated dynamically -->
+            </select>
+        </section>
+        <section id="places-list">
+            <!-- List of places will be populated dynamically -->
+             <ul class="cards">
+                <li class="place-card">
+                    <h3>Place Name</h3>
+                    <p>Price</p>
+                    <button class="details-button">View Details</button>
+                </li>
+                <li class="place-card"></li>
+                <li class="place-card"></li>
+             </ul>
+        </section>
+    </main>
+    <script src="scripts.js"></script>
+    <footer class="footer-container">
+        <hr>
+        <p>All rights reserved</p>
+    </footer>
+</body>
+</html>
