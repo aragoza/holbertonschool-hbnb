@@ -35,11 +35,12 @@ class AmenityList(Resource):
             return key in dict_amenity_model.keys()
         try:
             new_amenity = facade.create_amenity(dict(filter(test, amenity_data.items())))
+            return {'id': new_amenity.id, 'name': new_amenity.name}, 201
         except Exception as e:
             if hasattr(e, 'httpcode'):
                 return {'error': str(e)}, e.httpcode
 
-        return {'id': new_amenity.id, 'name': new_amenity.name}, 201
+        return {}
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(401, 'Unauthorized user')
