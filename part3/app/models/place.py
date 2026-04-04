@@ -25,7 +25,7 @@ class Place(BaseModel):
     longitude = Column(Float, nullable=False)
     user_id = Column(String(36), ForeignKey('users.id'), nullable=False)
 
-    amenities = relationship('Course', secondary=place_amenity, lazy='subquery',
+    amenities = relationship('Amenity', secondary=place_amenity, lazy='subquery',
                            backref=db.backref('places', lazy=True))
 
 
