@@ -39,6 +39,10 @@ nav a {
     margin-left: 1rem;
 }
 
+a {
+    color: #fff;
+    text-decoration: none;
+}
 main {
     padding: 2rem;
 }
@@ -98,6 +102,7 @@ main {
   text-align: center;
   text-transform: uppercase;
   text-decoration: none;
+  text-decoration-color: #ddd;
   transition: 0.5s;
   background-size: 200% auto;
   color: white;
