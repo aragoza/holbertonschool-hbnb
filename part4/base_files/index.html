@@ -13,7 +13,7 @@
 		<div id="logo-and-login">
 			<img class="logo" src="logo.png" alt="site-logo">
 			<button class="login-button">
-				<a href="login.html" id="login-link">Login</a>
+				<a href="login.html" id="login-butt">Login</a>
 			</button>
 		</div>
 		<nav>
@@ -26,9 +26,15 @@
 		</nav>
 	</header>
 	<main>
-		<section id="places-list">
-			<!-- List of places will be populated dynamically -->
-			<table>
+		<section id="filter">
+            <label for="price-filter">Max Price:</label>
+            <select id="price-filter">
+                <!-- Options will be populated dynamically -->
+            </select>
+        </section>
+        <section id="places-list">
+            <!-- List of places will be populated dynamically -->
+			 <table>
 				<caption>
 					<section id="filter">
 						<label for="price-filter">Max Price:</label>
@@ -55,11 +61,10 @@
 				   </td>
 				</tr>
 			</table>
-		</section>
+        </section>
 	</main>
 	<script src="scripts.js"></script>
 	<footer class="footer-container">
-		<hr>
 		<p>All rights reserved</p>
 	</footer>
 </body>
