@@ -75,18 +75,25 @@ function getCookie(name) {
 
 function displayPlaces() {
 	fetch('http://127.0.0.1:5000/api/v1/places')
-		.then(response => response.json())
+		.then(response => response.json())  // Parse JSON response
 		.then(places => {
 			const placesContainer = document.getElementById('cards');
 			placesContainer.innerHTML = '';
+			
+			// Iterate through the places array
 			places.forEach(place => {
-				const placeElement = document.createElement('');
-				placeElement.innerHTML = `
+				// Create a table cell
+				const td = document.createElement('td');
+				
+				td.className = 'place-card';
+				td.innerHTML = `
 					<h2>${place.title}</h2>
-					<p>${place.description}</p>
-					<p>Price: $${place.price}</p>
+					<p>Price: ${place.price} \$</p>
+					<button class="details-button" data-id="${place.id}">View Details</button>
 				`;
-				placesContainer.appendChild(placeElement);
+				
+				// Append card to td, then td to container
+				placesContainer.appendChild(td);
 			});
 		})
 		.catch(error => {
