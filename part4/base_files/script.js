@@ -4,16 +4,15 @@
 */
 
 document.addEventListener('DOMContentLoaded', () => {
-	
+
 	// Check if we are on the index page and verify the token
 	if (window.location.pathname.endsWith('index.html')) {
 		const token = getCookie('token');
-		// If no token is found, redirect to the login page
+		console.log('Token:', token); // Debugging line to check the token value to remove on the final version
 		if (!token) {
 			window.location.href = 'login.html';
 			return;
 		}
-		console.log(token)
 	}
 	if (window.location.pathname.endsWith('index.html')) {
 		displayPlaces();
@@ -30,6 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 });
+
+// Event listener for the details buttons on the index page
+document.addEventListener('click', (event) => {
+	if (event.target.classList.contains('details-button')) {
+		const placeId = event.target.getAttribute('data-id');
+		window.location.href = `place.html`;
+	    return placeId;
+	}
+});
+
 
 // Function to handle login form submission
 function loginfunction(loginForm) {
@@ -57,24 +66,11 @@ function loginfunction(loginForm) {
 	});
 }
 
-// Helper function to get a cookie value by name
-function getCookie(name) {
-    const cookies = document.cookie;
-	const cookieArray = cookies.split(';');
-	// Loop through the cookies to find the one with the specified name
-	for (let i = 0; i < cookieArray.length; i++) {
-		const cookie = cookieArray[i].trim();
-		if (cookie.startsWith(name + '=')) {
-			return cookie.substring(name.length + 1);
-		}
-	}
-	window.location.href = 'login.html';
-	return null;
-
-}
-
-
-function displayPlaces() {
+// Function to fetch and display places on the index page
+function displayPlaces(priceFilter = 0) {
+	NumberpriceFilter = parseFloat(priceFilter);
+	console.log('Price Filter:', NumberpriceFilter); 
+	console.log('Type of Price Filter:', typeof NumberpriceFilter); // Debugging line to check the price filter value to remove on the final version
 	fetch('http://127.0.0.1:5000/api/v1/places')
 		.then(response => response.json())  // Parse JSON response
 		.then(places => {
@@ -83,21 +79,57 @@ function displayPlaces() {
 			
 			// Iterate through the places array
 			places.forEach(place => {
-				// Create a table cell
-				const td = document.createElement('td');
-				
-				td.className = 'place-card';
-				td.innerHTML = `
-					<h2>${place.title}</h2>
-					<p>Price: ${place.price} \$</p>
-					<button class="details-button" data-id="${place.id}">View Details</button>
-				`;
-				
-				// Append a td to container
-				placesContainer.appendChild(td);
+				// Create a table cell for each place
+				console.log('Place Price:', place.price); // Debugging line to check the place price value to remove on the final version
+				console.log('Type of Place Price:', typeof parseFloat(place.price)); // Debugging line to check the place price value to remove on the final version
+
+				if (isNaN(NumberpriceFilter) || parseFloat(place.price) <= NumberpriceFilter) {
+
+					const td = document.createElement('td');
+					
+					td.className = 'place-card';
+					td.innerHTML = `
+						<h2>${place.title}</h2>
+						<p>Price: ${place.price} \$</p>
+						<button class="details-button" data-id="${place.id}">View Details</button>
+					`;
+					
+					// Append a td to container
+					placesContainer.appendChild(td);
+				}
 			});
 		})
 		.catch(error => {
 			console.error('Error fetching places:', error);
 		});
 }
+
+// Helper function to get a cookie value by name
+function getCookie(name) {
+    const cookies = document.cookie;
+	const cookieArray = cookies.split(';');
+
+	for (let cookie of cookieArray) {
+		cookie = cookie.trim();
+		if (cookie.startsWith(name + '=')) {
+			return cookie.substring(name.length + 1);
+		}
+	}
+	return null;
+}
+
+// Load the price to display only the places that are below the value
+
+const list_prices = [10, 50, 100, "All"];
+const priceFilter = document.getElementById('price-filter');
+
+list_prices.forEach(price => {
+	const option = document.createElement('option');
+	option.value = price;
+	option.textContent = price;
+	priceFilter.appendChild(option);
+});
+
+priceFilter.addEventListener('change', () => {
+	displayPlaces(priceFilter.value);
+});
