@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			window.location.href = 'login.html';
 			return;
 		}
+		console.log(token)
 	}
 	if (window.location.pathname.endsWith('index.html')) {
 		displayPlaces();
@@ -92,7 +93,7 @@ function displayPlaces() {
 					<button class="details-button" data-id="${place.id}">View Details</button>
 				`;
 				
-				// Append card to td, then td to container
+				// Append a td to container
 				placesContainer.appendChild(td);
 			});
 		})
