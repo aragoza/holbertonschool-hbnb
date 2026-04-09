@@ -21,13 +21,13 @@ header {
     background-color: #ff6445;
     color: #fff;
     padding: 1rem;
-    height: 100px
+    height: 100px;
 }
 
 footer {
     position: absolute;
     background-color: #ff6445;
-    height: 40px;
+    height: 60px;
     width: 100%;
     bottom: 0;
     text-align: center;
@@ -95,7 +95,7 @@ main {
 
 
 /** In the header */
-.login-button {
+#login-button {
   float: right;
   margin: 10px;
   padding: 15px 30px;
@@ -118,14 +118,14 @@ main {
   touch-action: manipulation;
 }
 
-.login-button:hover {
+#login-button:hover {
   background-position: right center;
   /* change the direction of the change here */
   color: #fff;
   text-decoration: none;
 }
 
-.login-button:active {
+#login-button:active {
   transform: scale(0.95);
 }
 
