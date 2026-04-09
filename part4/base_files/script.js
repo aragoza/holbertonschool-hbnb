@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			console.error('Login form not found!');
 		}
 	}
+	// No login button if the user is connected
+	const loginLink = document.getElementById('login-display')
+	if (!getCookie('token')) {
+        loginLink.style.display = 'block';
+    }
 });
 
 // Event listener for the details buttons on the index page
@@ -67,6 +72,7 @@ function loginfunction(loginForm) {
 }
 
 // Function to fetch and display places on the index page
+// Need to be corrected because it doesn't apply the price bound to the place
 function displayPlaces(priceFilter = 0) {
 	NumberpriceFilter = parseFloat(priceFilter);
 	console.log('Price Filter:', NumberpriceFilter); 
@@ -83,7 +89,7 @@ function displayPlaces(priceFilter = 0) {
 				console.log('Place Price:', place.price); // Debugging line to check the place price value to remove on the final version
 				console.log('Type of Place Price:', typeof parseFloat(place.price)); // Debugging line to check the place price value to remove on the final version
 
-				if (isNaN(NumberpriceFilter) || parseFloat(place.price) <= NumberpriceFilter) {
+				if (isNaN(NumberpriceFilter) || (parseFloat(place.price) >= NumberpriceFilter)) {
 
 					const td = document.createElement('td');
 					
@@ -108,6 +114,8 @@ function displayPlaces(priceFilter = 0) {
 function getCookie(name) {
     const cookies = document.cookie;
 	const cookieArray = cookies.split(';');
+
+// Need a datetime delete of the cookie to be better
 
 	for (let cookie of cookieArray) {
 		cookie = cookie.trim();
