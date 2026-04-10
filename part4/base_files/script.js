@@ -8,20 +8,18 @@
 document.addEventListener('DOMContentLoaded', () => {
 
 	// Check if we are on the index page and verify the token
-	if (window.location.pathname.search('index.html')) {
+	if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) { // We will need to check the root path better later
 		const token = getCookie('token');
 		console.log('Token:', token); // Debugging line to check the token value to remove on the final version
 		if (!token) {
 			window.location.href = 'login.html';
 			return;
+		} else {
+			console.log('Token found.');
 		}
 	}
-	if (window.location.pathname.search('index.html')) {
-		displayPlaces();
-	}
-	
 	// Check if we are on the login page and set up the login form handler
-	if (window.location.pathname.search('login.html')) {
+	if (window.location.pathname.includes('login.html')) {
 		const loginForm = document.getElementById('login-form');
 
 		if (loginForm) {
@@ -31,13 +29,23 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 	// No login button if the user is connected
-	const loginLink = document.getElementById('login-display')
-	if (!getCookie('token')) {
-        loginLink.style.display = 'block';
-    }
+	const loginLink = document.getElementById('login-button');
+	if (loginLink) {
+		if (!getCookie('token')) {
+			loginLink.style.display = 'block';
+		} else {
+			loginLink.style.display = 'none';
+		}
+	}
 
-	if (window.location.pathname.search('place.html')) {
+	if (window.location.pathname.includes('index.html')) {
+		loadPriceFilter();
+		displayPlaces();
+	}
+
+	if (window.location.pathname.includes('place.html')) {
 		displayPlaceDetails();
+		displayReviews();
 	}
 });
 
@@ -85,23 +93,20 @@ function loginfunction(loginForm) {
 
 // Function to fetch and display places on the index page
 // Need to be corrected because it doesn't apply the price bound to the place -> I think it is corrected but not tested correctly
-function displayPlaces(priceFilter = 0) {
-	NumberpriceFilter = parseFloat(priceFilter);
-	console.log('Price Filter:', NumberpriceFilter); 
-	console.log('Type of Price Filter:', typeof NumberpriceFilter); // Debugging line to check the price filter value to remove on the final version
+function displayPlaces(priceFilter = 'All') {
+	console.log('Price Filter:', priceFilter); // Debugging line to check the price filter value to remove on the final version
+	console.log('Type of Price Filter:', typeof priceFilter); // Debugging line to check the price filter value to remove on the final version
 	fetch('http://127.0.0.1:5000/api/v1/places')
 		.then(response => response.json())  // Parse JSON response
 		.then(places => {
 			const placesContainer = document.getElementById('cards');
 			placesContainer.innerHTML = '';
-			
-			// Iterate through the places array
 			places.forEach(place => {
 				// Create a table cell for each place
 				console.log('Place Price:', place.price); // Debugging line to check the place price value to remove on the final version
 				console.log('Type of Place Price:', typeof parseFloat(place.price)); // Debugging line to check the place price value to remove on the final version
 
-				if (isNaN(NumberpriceFilter) || (parseFloat(place.price) >= NumberpriceFilter)) {
+				if (priceFilter === 'All' || (parseFloat(place.price) <= parseFloat(priceFilter))) {
 
 					const td = document.createElement('td');
 					
@@ -123,20 +128,21 @@ function displayPlaces(priceFilter = 0) {
 }
 
 // Load the price to display only the places that are below the value
+function loadPriceFilter() {
+	const list_prices = [10, 50, 100, "All"];
+	const priceFilter = document.getElementById('price-filter');
 
-const list_prices = [10, 50, 100, "All"];
-const priceFilter = document.getElementById('price-filter');
+	list_prices.forEach(price => {
+		const option = document.createElement('option');
+		option.value = price;
+		option.textContent = price;
+		priceFilter.appendChild(option);
+	});
 
-list_prices.forEach(price => {
-	const option = document.createElement('option');
-	option.value = price;
-	option.textContent = price;
-	priceFilter.appendChild(option);
-});
-
-priceFilter.addEventListener('change', () => {
-	displayPlaces(priceFilter.value);
-});
+	priceFilter.addEventListener('change', () => {
+		displayPlaces(priceFilter.value);
+	});
+}
 
 
 // PLACE DETAILS PAGE
@@ -144,14 +150,7 @@ priceFilter.addEventListener('change', () => {
 
 // Function to navigate to the place details page when the "View Details" button is clicked
 function navigateToPlaceDetails(placeId) {
-	const buttonViewDetails = document.getElementsByClassName('details-button');
-	for (let button of buttonViewDetails) {
-		button.addEventListener('click', () => {
-			const placeId = button.getAttribute('data-id');
-			console.log('Navigating to place details for ID:', placeId); // Debugging line to check the place ID value to remove on the final version
-			window.location.href = `place.html?id=${placeId}`; // Wrong URL, need to be corrected to pass the place ID as a query parameter
-		});
-	}
+	window.location.href = `place.html?id=${placeId}`;
 }
 
 // Function to fetch and display place details on the place details page
@@ -177,7 +176,6 @@ function displayPlaceDetails() {
 				<p>Latitude: ${place.latitude}</p>
 				<p>Longitude: ${place.longitude}</p>
 				<p>Owner ID: ${place.user_id}</p>
-				<p>Reviews: ${place.reviews}</p>
 				<p>Amenities: ${place.amenities}</p>
 			`;
 			document.getElementById('place-details').appendChild(td);
@@ -186,6 +184,46 @@ function displayPlaceDetails() {
 			console.error('Error fetching place details:', error);
 		});
 }
+
+// Function to add reviews to the place
+addEventListener('DOMContentLoaded', () => {
+	const reviewForm = document.getElementById('review-form');
+	const token = getCookie('token');
+	const placeId = getPlaceIdFromURL();
+
+	if (reviewForm) {
+		reviewForm.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const reviewText = document.getElementById('review-text').value;
+			const reviewRating = document.getElementById('review-rating').value;
+
+			try {
+				const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+					 place_id: placeId,
+					 text: reviewText,
+					 rating: reviewRating
+					})
+				});
+
+				if (!response.ok) {
+					console.error('Failed to add review:', response.statusText);
+					return;
+				}
+
+				// Clear the form after successful submission
+				reviewForm.reset();
+			} catch (error) {
+				console.error('Error adding review:', error);
+			}
+		});
+	}
+});
 
 
 // ADD REVIEWS TO PLACE DETAILS PAGE
