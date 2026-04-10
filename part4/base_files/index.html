@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="beach-logo.png">
+	<title>List of Places</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<header>
+		<!-- Mandatory -->
+		<div id="logo-and-login">
+			<img class="logo" src="logo.png" alt="site-logo">
+			<button id="login-button">
+				<a href="login.html" id="login-butt">Login</a>
+			</button>
+		</div>
+		<nav>
+			<div id="navigation">
+				<a href="index.html" id="index-link">Homepage</a>
+				<a href="login.html" id="login-link">Login</a>
+			</div>
+		</nav>
+	</header>
+	<main>
+		<section id="filter">
+            <label for="price-filter">Max Price:</label>
+            <select id="price-filter">
+                <!-- Options will be populated dynamically -->
+            </select>
+        </section>
+        <section id="places-list">
+            <!-- List of places will be populated dynamically -->
+			 <table>
+				<tr id="cards">
+					<!-- Place cards will be inserted here -->
+				</tr>
+			</table>
+        </section>
+	</main>
+	<script src="script.js"></script>
+	<footer class="footer-container">
+		<p>All rights reserved</p>
+	</footer>
+</body>
+</html>

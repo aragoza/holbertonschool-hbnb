@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="beach-logo.png">
+    <title>Add Review</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Mandatory -->
+        <div id="logo-and-login">
+			<img class="logo" src="logo.png" alt="site-logo">
+			<button id="login-button">
+				<a href="login.html" id="login-link">Login</a>
+			</button>
+		</div>
+		<nav>
+			<div id="navigation">
+				<a href="index.html" id="index-link">Homepage</a>
+				<a href="login.html" id="login-link">Login</a>
+			</div>
+		</nav>
+    </header>
+    <main>
+        <!-- Add something to idfentify the place you're reviewing -->
+        <form id="review-form">
+            <h2>Add a Review</h2>
+            <label for="review">Your Review:</label>
+            <textarea id="review" name="review" required></textarea>
+            <label for="rating">Rating:</label>
+            <select id="rating" name="rating" required>
+                <!-- Options for rating -->
+            </select>
+            <button type="submit">Submit Review</button>
+        </form>
+    </main>
+    <script src="scripts.js"></script>
+    <footer class="footer-container">
+		<p>All rights reserved</p>
+	</footer>
+</body>
+</html>

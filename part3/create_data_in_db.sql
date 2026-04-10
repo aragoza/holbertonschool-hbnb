@@ -80,3 +80,72 @@ VALUES (
     '462cf7f9-c53e-4bf6-bf96-3c990a5c78a4',
     'Air Conditioning'
 );
+
+INSERT INTO places (
+    id,
+    title,
+    description,
+    price,
+    latitude,
+    longitude,
+    user_id,
+    created_at,
+    updated_at
+)
+VALUES (
+    'd1c9e5b8-8c3a-4f08-9c1e-2b5a1f0e6c3a',
+    'Cozy Cottage',
+    'A cozy cottage in the countryside with beautiful views.',
+    120.00,
+    34.0522,
+    -118.2437,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    '2024-06-01 12:00:00',
+    '2024-06-01 12:00:00'
+);
+
+INSERT INTO places (
+    id,
+    title,
+    description,
+    price,
+    latitude,
+    longitude,
+    user_id,
+    created_at,
+    updated_at
+)
+VALUES (
+    'a2b3c4d5-e6f7-8901-2345-67890abcdef1',
+    'Modern Apartment',
+    'A modern apartment in the city center with all amenities.',
+    200.00,
+    40.7128,
+    -74.0060,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    '2024-06-01 12:00:00',
+    '2024-06-01 12:00:00'
+);
+
+INSERT INTO places (
+    id,
+    title,
+    description,
+    price,
+    latitude,
+    longitude,
+    user_id,
+    created_at,
+    updated_at
+)
+VALUES (
+    'f1e2d3c4-b5a6-7890-1234-56789abcdef2',
+    'Beachfront Villa',
+    'A luxurious beachfront villa with stunning ocean views.',
+    350.00,
+    25.7617,
+    -80.1918,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    '2024-06-01 12:00:00',
+    '2024-06-01 12:00:00'
+);
