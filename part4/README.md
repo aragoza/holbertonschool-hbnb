@@ -76,7 +76,7 @@ use the command : ```pip install -r requirments.txt```
 
 ## To test the app front-end
 
-### First run the server
+1. First run the server
 ***first create the database***
 ```
 flask shell
@@ -95,7 +95,7 @@ execute the ***./run.py***
 forward a port to test locally the app front-end
 ```
 
-### Test the front
+2. Test the front
 -Login with :
     - email: admin@hbnb.com
     - password: admin1234
