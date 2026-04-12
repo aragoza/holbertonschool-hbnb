@@ -77,20 +77,20 @@ use the command : ```pip install -r requirments.txt```
 ## To test the app front-end
 
 1. First run the server
-***first create the database***
+- ***first create the database***
 ```
 flask shell
 db.create_all()
 ```
-***then create the necessary element***
+- ***then create the necessary element***
 ```
 run the part you need in the file ***create_data_in_db.sql***
 ```
-***then launch the server***
+- ***then launch the server***
 ```
 execute the ***./run.py***
 ```
-***and last***
+- ***and last***
 ```
 forward a port to test locally the app front-end
 ```
