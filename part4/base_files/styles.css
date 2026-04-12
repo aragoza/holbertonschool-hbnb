@@ -47,7 +47,14 @@ main {
     padding: 2rem;
 }
 
-.place-card {
+.place-cards {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.cards {
     margin: 20px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -131,13 +138,4 @@ main {
 
 .logo {
     float: left;
-}
-
-th , td {
-    border: 2px solid #333;
-    padding: 5px
-}
-table {
-    width: 100%;
-    padding-bottom: 20px;
 }
