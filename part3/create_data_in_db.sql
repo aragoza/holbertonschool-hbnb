@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS places (
     price DECIMAL(10, 2),
     latitude FLOAT,
     longitude FLOAT,
-    owner_id CHAR(36),
+    user_id CHAR(36),
     PRIMARY KEY(id),
-    FOREIGN KEY (owner_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS review (

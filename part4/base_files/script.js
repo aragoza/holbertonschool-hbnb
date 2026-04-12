@@ -4,18 +4,18 @@
 */
 
 // Event listener for when the DOM content is fully loaded
-
 document.addEventListener('DOMContentLoaded', () => {
 
 	// Check if we are on the index page and verify the token
+	// To test the login you can write :
+	// email: admin@hbnb.com
+	// password: admin1234
 	if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) { // We will need to check the root path better later
 		const token = getCookie('token');
 		console.log('Token:', token); // Debugging line to check the token value to remove on the final version
-		if (!token) {
-			window.location.href = 'login.html';
-			return;
-		} else {
-			console.log('Token found.');
+		if (token) {
+			loadPriceFilter();
+			displayPlaces();
 		}
 	}
 	// Check if we are on the login page and set up the login form handler
@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 	// No login button if the user is connected
+	// To test the login you can write :
+	// email: admin@hbnb.com
+	// password: admin1234
 	const loginLink = document.getElementById('login-button');
 	if (loginLink) {
 		if (!getCookie('token')) {
@@ -39,11 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	if (window.location.pathname.includes('index.html')) {
-		loadPriceFilter();
-		displayPlaces();
+		const token = getCookie('token');
+		console.log('Token:', token); // Debugging line to check the token value to remove on the final version
+		if (!token) {
+			window.location.href = 'login.html';
+			return;
+		} else {
+			console.log('Token found.');
+		}
 	}
 
 	if (window.location.pathname.includes('place.html')) {
+		if (getCookie('token')) {
+			navigateToAddReviewPage(getPlaceIdFromURL());
+		}
 		displayPlaceDetails();
 		displayReviews();
 	}
@@ -59,6 +71,23 @@ document.addEventListener('click', (event) => {
 	}
 });
 
+// Event listener for the price filter dropdown on the index page
+document.addEventListener('click', (event) => {
+	if (event.target.classList.contains('price-filter')) {
+		const priceFilter = event.target.value;
+		displayPlaces(priceFilter);
+	}
+});
+
+document.addEventListener('submit', (event) => {
+	if (event.target.id === 'review-form') {
+		event.preventDefault();
+		const placeId = getPlaceIdFromURL();
+		const reviewText = document.getElementById('review-text').value;
+		const reviewRating = document.getElementById('review-rating').value;
+		addReview(placeId, reviewText, reviewRating);
+	}
+});
 
 
 // Function to handle login form submission
@@ -99,7 +128,7 @@ function displayPlaces(priceFilter = 'All') {
 	fetch('http://127.0.0.1:5000/api/v1/places')
 		.then(response => response.json())  // Parse JSON response
 		.then(places => {
-			const placesContainer = document.getElementById('cards');
+			const placesContainer = document.getElementById('places-cards'); // Get the ul element inside the places-list section
 			placesContainer.innerHTML = '';
 			places.forEach(place => {
 				// Create a table cell for each place
@@ -108,17 +137,17 @@ function displayPlaces(priceFilter = 'All') {
 
 				if (priceFilter === 'All' || (parseFloat(place.price) <= parseFloat(priceFilter))) {
 
-					const td = document.createElement('td');
+					const li = document.createElement('li');
 					
-					td.className = 'place-card';
-					td.innerHTML = `
+					li.className = 'cards';
+					li.innerHTML = `
 						<h2>${place.title}</h2>
 						<p>Price: ${place.price} \$</p>
 						<button class="details-button" data-id="${place.id}">View Details</button>
 					`;
 					
 					// Append a td to container
-					placesContainer.appendChild(td);
+					placesContainer.appendChild(li);
 				}
 			});
 		})
@@ -147,6 +176,16 @@ function loadPriceFilter() {
 
 // PLACE DETAILS PAGE
 
+function navigateToAddReviewPage(placeId) {
+	const nav = document.getElementById('navigation');
+	const addReviewLink = document.createElement('a');
+	addReviewLink.href = `add_review.html?place_id=${placeId}`;
+	addReviewLink.textContent = 'Add Review';
+	addReviewLink.className = 'review-link';
+
+	nav.appendChild(addReviewLink);
+}
+
 
 // Function to navigate to the place details page when the "View Details" button is clicked
 function navigateToPlaceDetails(placeId) {
@@ -166,67 +205,88 @@ function displayPlaceDetails() {
 	fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`)
 		.then(response => response.json())
 		.then(place => {
-			const td = document.createElement('td');
+			const li = document.createElement('li');
 			console.log('Place Details:', place); // Debugging line to check the place details to remove on the final version
-			td.className = 'place-values';
-			td.innerHTML = `
+			li.className = 'place-values';
+			li.innerHTML = `
 				<h2>${place.title}</h2>
 				<p>Price: ${place.price} \$</p>
 				<p>Description: ${place.description}</p>
 				<p>Latitude: ${place.latitude}</p>
 				<p>Longitude: ${place.longitude}</p>
-				<p>Owner ID: ${place.user_id}</p>
-				<p>Amenities: ${place.amenities}</p>
+				<p>Owner ID: ${place.user.first_name} ${place.user.last_name}</p>
+				<p>Amenities: ${place.amenities.id}</p>
 			`;
-			document.getElementById('place-details').appendChild(td);
+			document.getElementById('place-info').appendChild(li);
 		})
 		.catch(error => {
 			console.error('Error fetching place details:', error);
 		});
 }
 
-// Function to add reviews to the place
-addEventListener('DOMContentLoaded', () => {
-	const reviewForm = document.getElementById('review-form');
-	const token = getCookie('token');
+// Function to display the reviews for the place on the place details page
+async function displayReviews() {
 	const placeId = getPlaceIdFromURL();
-
-	if (reviewForm) {
-		reviewForm.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const reviewText = document.getElementById('review-text').value;
-			const reviewRating = document.getElementById('review-rating').value;
-
-			try {
-				const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${token}`
-					},
-					body: JSON.stringify({
-					 place_id: placeId,
-					 text: reviewText,
-					 rating: reviewRating
-					})
-				});
-
-				if (!response.ok) {
-					console.error('Failed to add review:', response.statusText);
-					return;
-				}
-
-				// Clear the form after successful submission
-				reviewForm.reset();
-			} catch (error) {
-				console.error('Error adding review:', error);
+	try {
+		const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews` , {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${getCookie('token')}`
 			}
 		});
+		if (!response.ok) {
+			throw new Error('Failed to fetch reviews');
+		}
+		const reviews = await response.json();
+		const reviewsContainer = document.getElementById('review-card'); // Get the ul element inside the reviews section
+		reviewsContainer.innerHTML = '';
+		reviews.forEach(review => {
+			if (review.place_id === placeId) {
+				const li = document.createElement('li');
+				li.className = 'cards';
+				li.innerHTML = `
+					<p>Comment: ${review.text}</p>
+					<p>Author: ${review.user.first_name}</p>
+					<p>Rating: ${review.rating}</p>
+				`;
+				reviewsContainer.appendChild(li);
+			}
+
+		});
+	} catch (error) {
+		console.error('Error fetching reviews:', error);
 	}
-});
+}
+
+// ADD REVIEWS PAGE
 
 
-// ADD REVIEWS TO PLACE DETAILS PAGE
+async function addReview(placeId, reviewText, reviewRating) {
+	const token = getCookie('token');
+	try {
+		const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				place_id: placeId,
+				text: reviewText,
+				rating: reviewRating
+			})
+		});
+
+		if (!response.ok) {
+			throw new Error('Failed to add review');
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error('Error adding review:', error);
+	}
+}
 
 
 // COOKIES

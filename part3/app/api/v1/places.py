@@ -11,7 +11,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, min=0),
     'latitude': fields.Float(required=True, min=-90, max=90),
     'longitude': fields.Float(required=True, min=-180, max=180),
-    'owner_id': fields.String(required=True),
+    'user_id': fields.String(required=True),
     'amenities': fields.List(fields.String, required=True)
 })
 
@@ -42,7 +42,7 @@ class PlaceList(Resource):
                 'price': place.price,
                 'latitude': place.latitude,
                 'longitude': place.longitude,
-                'owner_id': place.user_id,
+                'user_id': place.user_id,
                 'amenities': [
                     {
                         'id': amenity.id,
@@ -91,11 +91,11 @@ class PlaceResource(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
-            'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email
+            'user': {
+                'id': place.user.id,
+                'first_name': place.user.first_name,
+                'last_name': place.user.last_name,
+                'email': place.user.email
             },
             'amenities': [
                 {
@@ -121,7 +121,7 @@ class PlaceResource(Resource):
             return {'error': 'Unauthorized user'}, 401
 
         place = facade.get_place(place_id)
-        if actual_user != place['owner_id'] or not actual_user.get('is_admin'):
+        if actual_user != place['user_id'] or not actual_user.get('is_admin'):
             return {'error': 'Unauthorized action'}, 403
 
         try:
