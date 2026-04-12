@@ -75,17 +75,32 @@ use the command : ```pip install -r requirments.txt```
     - zipp==3.23.0
 
 ## To test the app front-end
+
+### First run the server
 ***first create the database***
 ```
 flask shell
 db.create_all()
 ```
 ***then create the necessary element***
+```
 run the part you need in the file ***create_data_in_db.sql***
-
+```
 ***then launch the server***
+```
 execute the ***./run.py***
-
+```
 ***and last***
+```
 forward a port to test locally the app front-end
+```
 
+### Test the front
+-Login with :
+    - email: admin@hbnb.com
+    - password: admin1234
+
+-Click on View Details button
+-Click on the Add_Review in the navigation
+-Send a response and submit
+-Come back home
