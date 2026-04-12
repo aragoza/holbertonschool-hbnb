@@ -79,6 +79,7 @@ use the command : ```pip install -r requirments.txt```
 1. First run the server
 - ***first create the database***
 ```
+./create_db.py
 flask shell
 db.create_all()
 ```
